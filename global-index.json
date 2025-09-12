@@ -1,5 +1,5 @@
 {
-  "lastUpdate": "2025-09-12T23:13:50.602Z",
+  "lastUpdate": "2025-09-12T23:18:54.447Z",
   "domains": [
     "ad.nl",
     "pzc.nl",
@@ -13,51 +13,51 @@
   "latestSnapshots": [
     {
       "domain": "ad.nl",
-      "success": true,
-      "snapshotId": "ad.nl/2025-09-13/01-00",
-      "timestamp": "2025-09-12T23:13:26.182Z"
+      "success": false,
+      "timestamp": "2025-09-12T23:18:54.447Z",
+      "error": "Page.captureScreenshot timed out. Increase the 'protocolTimeout' setting in launch/connect calls for a higher timeout if needed."
     },
     {
       "domain": "pzc.nl",
       "success": true,
       "snapshotId": "pzc.nl/2025-09-13/01-00",
-      "timestamp": "2025-09-12T23:13:26.204Z"
+      "timestamp": "2025-09-12T23:17:29.147Z"
     },
     {
       "domain": "ed.nl",
       "success": true,
       "snapshotId": "ed.nl/2025-09-13/01-00",
-      "timestamp": "2025-09-12T23:13:26.203Z"
+      "timestamp": "2025-09-12T23:17:29.129Z"
     },
     {
       "domain": "bd.nl",
       "success": true,
       "snapshotId": "bd.nl/2025-09-13/01-00",
-      "timestamp": "2025-09-12T23:13:34.447Z"
+      "timestamp": "2025-09-12T23:18:36.358Z"
     },
     {
       "domain": "destentor.nl",
       "success": true,
       "snapshotId": "destentor.nl/2025-09-13/01-00",
-      "timestamp": "2025-09-12T23:13:34.485Z"
+      "timestamp": "2025-09-12T23:18:36.394Z"
     },
     {
       "domain": "gelderlander.nl",
       "success": true,
       "snapshotId": "gelderlander.nl/2025-09-13/01-00",
-      "timestamp": "2025-09-12T23:13:34.541Z"
+      "timestamp": "2025-09-12T23:18:36.447Z"
     },
     {
       "domain": "tubantia.nl",
       "success": true,
       "snapshotId": "tubantia.nl/2025-09-13/01-00",
-      "timestamp": "2025-09-12T23:13:43.085Z"
+      "timestamp": "2025-09-12T23:18:46.171Z"
     },
     {
       "domain": "bndestem.nl",
       "success": true,
       "snapshotId": "bndestem.nl/2025-09-13/01-00",
-      "timestamp": "2025-09-12T23:13:43.124Z"
+      "timestamp": "2025-09-12T23:18:46.208Z"
     }
   ]
 }

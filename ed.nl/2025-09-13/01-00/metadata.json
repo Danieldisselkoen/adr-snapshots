@@ -2,7 +2,7 @@
   "id": "ed.nl/2025-09-13/01-00",
   "domain": "ed.nl",
   "url": "https://www.ed.nl",
-  "timestamp": "2025-09-12T23:13:26.203Z",
+  "timestamp": "2025-09-12T23:17:29.129Z",
   "date": "2025-09-13",
   "hour": "01-00",
   "viewport": {
@@ -10,7 +10,7 @@
     "height": 1000
   },
   "fileSize": {
-    "screenshot": 448268,
-    "html": 515655
+    "screenshot": 301138,
+    "html": 8696
   }
 }
