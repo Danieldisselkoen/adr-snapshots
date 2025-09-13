@@ -2,11 +2,11 @@
   "domain": "bndestem.nl",
   "snapshots": [
     {
-      "id": "bndestem.nl/2025-09-13/12-00",
-      "timestamp": "2025-09-13T10:14:15.287Z",
+      "id": "bndestem.nl/2025-09-13/13-00",
+      "timestamp": "2025-09-13T11:11:28.652Z",
       "date": "2025-09-13",
-      "hour": "12-00",
-      "path": "/snapshots/bndestem.nl/2025-09-13/12-00/"
+      "hour": "13-00",
+      "path": "/snapshots/bndestem.nl/2025-09-13/13-00/"
     }
   ]
 }
