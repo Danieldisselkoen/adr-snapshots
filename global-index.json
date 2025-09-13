@@ -1,5 +1,5 @@
 {
-  "lastUpdate": "2025-09-13T16:18:22.855Z",
+  "lastUpdate": "2025-09-13T17:13:45.944Z",
   "domains": [
     "ad.nl",
     "pzc.nl",
@@ -14,50 +14,50 @@
     {
       "domain": "ad.nl",
       "success": true,
-      "snapshotId": "ad.nl/2025-09-13/18-00",
-      "timestamp": "2025-09-13T16:15:23.580Z"
+      "snapshotId": "ad.nl/2025-09-13/19-00",
+      "timestamp": "2025-09-13T17:10:56.817Z"
     },
     {
       "domain": "pzc.nl",
       "success": true,
-      "snapshotId": "pzc.nl/2025-09-13/18-00",
-      "timestamp": "2025-09-13T16:15:47.179Z"
+      "snapshotId": "pzc.nl/2025-09-13/19-00",
+      "timestamp": "2025-09-13T17:11:18.924Z"
     },
     {
       "domain": "ed.nl",
       "success": true,
-      "snapshotId": "ed.nl/2025-09-13/18-00",
-      "timestamp": "2025-09-13T16:16:08.596Z"
+      "snapshotId": "ed.nl/2025-09-13/19-00",
+      "timestamp": "2025-09-13T17:11:40.440Z"
     },
     {
       "domain": "bd.nl",
       "success": true,
-      "snapshotId": "bd.nl/2025-09-13/18-00",
-      "timestamp": "2025-09-13T16:16:32.443Z"
+      "snapshotId": "bd.nl/2025-09-13/19-00",
+      "timestamp": "2025-09-13T17:12:01.827Z"
     },
     {
       "domain": "destentor.nl",
       "success": true,
-      "snapshotId": "destentor.nl/2025-09-13/18-00",
-      "timestamp": "2025-09-13T16:16:56.151Z"
+      "snapshotId": "destentor.nl/2025-09-13/19-00",
+      "timestamp": "2025-09-13T17:12:22.636Z"
     },
     {
       "domain": "gelderlander.nl",
       "success": true,
-      "snapshotId": "gelderlander.nl/2025-09-13/18-00",
-      "timestamp": "2025-09-13T16:17:19.048Z"
+      "snapshotId": "gelderlander.nl/2025-09-13/19-00",
+      "timestamp": "2025-09-13T17:12:43.897Z"
     },
     {
       "domain": "tubantia.nl",
       "success": true,
-      "snapshotId": "tubantia.nl/2025-09-13/18-00",
-      "timestamp": "2025-09-13T16:17:40.430Z"
+      "snapshotId": "tubantia.nl/2025-09-13/19-00",
+      "timestamp": "2025-09-13T17:13:05.915Z"
     },
     {
       "domain": "bndestem.nl",
       "success": true,
-      "snapshotId": "bndestem.nl/2025-09-13/18-00",
-      "timestamp": "2025-09-13T16:18:05.234Z"
+      "snapshotId": "bndestem.nl/2025-09-13/19-00",
+      "timestamp": "2025-09-13T17:13:28.909Z"
     }
   ]
 }
