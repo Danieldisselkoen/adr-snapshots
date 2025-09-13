@@ -1,5 +1,5 @@
 {
-  "lastUpdate": "2025-09-13T11:11:44.789Z",
+  "lastUpdate": "2025-09-13T12:28:35.298Z",
   "domains": [
     "ad.nl",
     "pzc.nl",
@@ -14,50 +14,50 @@
     {
       "domain": "ad.nl",
       "success": true,
-      "snapshotId": "ad.nl/2025-09-13/13-00",
-      "timestamp": "2025-09-13T11:10:55.445Z"
+      "snapshotId": "ad.nl/2025-09-13/14-00",
+      "timestamp": "2025-09-13T12:26:46.500Z"
     },
     {
       "domain": "pzc.nl",
-      "success": true,
-      "snapshotId": "pzc.nl/2025-09-13/13-00",
-      "timestamp": "2025-09-13T11:10:55.462Z"
+      "success": false,
+      "timestamp": "2025-09-13T12:28:35.298Z",
+      "error": "Page.captureScreenshot timed out. Increase the 'protocolTimeout' setting in launch/connect calls for a higher timeout if needed."
     },
     {
       "domain": "ed.nl",
       "success": true,
-      "snapshotId": "ed.nl/2025-09-13/13-00",
-      "timestamp": "2025-09-13T11:10:55.472Z"
+      "snapshotId": "ed.nl/2025-09-13/14-00",
+      "timestamp": "2025-09-13T12:26:46.848Z"
     },
     {
       "domain": "bd.nl",
       "success": true,
-      "snapshotId": "bd.nl/2025-09-13/13-00",
-      "timestamp": "2025-09-13T11:11:12.121Z"
+      "snapshotId": "bd.nl/2025-09-13/14-00",
+      "timestamp": "2025-09-13T12:28:02.905Z"
     },
     {
       "domain": "destentor.nl",
       "success": true,
-      "snapshotId": "destentor.nl/2025-09-13/13-00",
-      "timestamp": "2025-09-13T11:11:12.156Z"
+      "snapshotId": "destentor.nl/2025-09-13/14-00",
+      "timestamp": "2025-09-13T12:28:02.949Z"
     },
     {
       "domain": "gelderlander.nl",
       "success": true,
-      "snapshotId": "gelderlander.nl/2025-09-13/13-00",
-      "timestamp": "2025-09-13T11:11:12.205Z"
+      "snapshotId": "gelderlander.nl/2025-09-13/14-00",
+      "timestamp": "2025-09-13T12:28:03.002Z"
     },
     {
       "domain": "tubantia.nl",
       "success": true,
-      "snapshotId": "tubantia.nl/2025-09-13/13-00",
-      "timestamp": "2025-09-13T11:11:28.600Z"
+      "snapshotId": "tubantia.nl/2025-09-13/14-00",
+      "timestamp": "2025-09-13T12:28:19.288Z"
     },
     {
       "domain": "bndestem.nl",
       "success": true,
-      "snapshotId": "bndestem.nl/2025-09-13/13-00",
-      "timestamp": "2025-09-13T11:11:28.652Z"
+      "snapshotId": "bndestem.nl/2025-09-13/14-00",
+      "timestamp": "2025-09-13T12:28:19.332Z"
     }
   ]
 }
