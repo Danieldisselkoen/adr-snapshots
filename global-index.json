@@ -1,5 +1,5 @@
 {
-  "lastUpdate": "2025-09-13T15:45:01.291Z",
+  "lastUpdate": "2025-09-13T16:18:22.855Z",
   "domains": [
     "ad.nl",
     "pzc.nl",
@@ -15,49 +15,49 @@
       "domain": "ad.nl",
       "success": true,
       "snapshotId": "ad.nl/2025-09-13/18-00",
-      "timestamp": "2025-09-13T15:42:06.633Z"
+      "timestamp": "2025-09-13T16:15:23.580Z"
     },
     {
       "domain": "pzc.nl",
       "success": true,
       "snapshotId": "pzc.nl/2025-09-13/18-00",
-      "timestamp": "2025-09-13T15:42:30.492Z"
+      "timestamp": "2025-09-13T16:15:47.179Z"
     },
     {
       "domain": "ed.nl",
       "success": true,
       "snapshotId": "ed.nl/2025-09-13/18-00",
-      "timestamp": "2025-09-13T15:42:50.991Z"
+      "timestamp": "2025-09-13T16:16:08.596Z"
     },
     {
       "domain": "bd.nl",
       "success": true,
       "snapshotId": "bd.nl/2025-09-13/18-00",
-      "timestamp": "2025-09-13T15:43:12.750Z"
+      "timestamp": "2025-09-13T16:16:32.443Z"
     },
     {
       "domain": "destentor.nl",
       "success": true,
       "snapshotId": "destentor.nl/2025-09-13/18-00",
-      "timestamp": "2025-09-13T15:43:35.913Z"
+      "timestamp": "2025-09-13T16:16:56.151Z"
     },
     {
       "domain": "gelderlander.nl",
       "success": true,
       "snapshotId": "gelderlander.nl/2025-09-13/18-00",
-      "timestamp": "2025-09-13T15:44:00.182Z"
+      "timestamp": "2025-09-13T16:17:19.048Z"
     },
     {
       "domain": "tubantia.nl",
       "success": true,
       "snapshotId": "tubantia.nl/2025-09-13/18-00",
-      "timestamp": "2025-09-13T15:44:21.406Z"
+      "timestamp": "2025-09-13T16:17:40.430Z"
     },
     {
       "domain": "bndestem.nl",
       "success": true,
       "snapshotId": "bndestem.nl/2025-09-13/18-00",
-      "timestamp": "2025-09-13T15:44:42.898Z"
+      "timestamp": "2025-09-13T16:18:05.234Z"
     }
   ]
 }
