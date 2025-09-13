@@ -12,4 +12,10 @@ Deze repository bevat automatische snapshots van ADR nieuwssites.
 ## Automatische Updates
 Deze repository wordt automatisch geüpdatet door GitHub Actions workflow in adr-brandguide.
 
-Laatste cleanup: 13-9-2025, 23:24:45
+## Timestamp Synchronisatie Fix
+Alle snapshots binnen één run gebruiken nu exact dezelfde timestamp voor perfecte consistentie tussen:
+- Directory namen (bijv. `ad.nl/2025-09-13/23-42/`)
+- Manifest tijden (`"time": "23-42"`)
+- Wayback interface loading
+
+Laatste cleanup: 13-9-2025, 23:48 - Voorbereiding voor gefixxe timestamp workflow
