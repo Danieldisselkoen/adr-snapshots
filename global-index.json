@@ -1,0 +1,63 @@
+{
+  "lastUpdate": "2025-09-13T23:27:47+0200",
+  "domains": [
+    "ad.nl",
+    "pzc.nl",
+    "ed.nl",
+    "bd.nl",
+    "destentor.nl",
+    "gelderlander.nl",
+    "tubantia.nl",
+    "bndestem.nl"
+  ],
+  "latestSnapshots": [
+    {
+      "domain": "ad.nl",
+      "success": true,
+      "snapshotId": "ad.nl/2025-09-13/23-27",
+      "timestamp": "2025-09-13T23:27:47+0200"
+    },
+    {
+      "domain": "pzc.nl",
+      "success": true,
+      "snapshotId": "pzc.nl/2025-09-13/23-27",
+      "timestamp": "2025-09-13T23:27:47+0200"
+    },
+    {
+      "domain": "ed.nl",
+      "success": true,
+      "snapshotId": "ed.nl/2025-09-13/23-27",
+      "timestamp": "2025-09-13T23:27:47+0200"
+    },
+    {
+      "domain": "bd.nl",
+      "success": true,
+      "snapshotId": "bd.nl/2025-09-13/23-27",
+      "timestamp": "2025-09-13T23:27:47+0200"
+    },
+    {
+      "domain": "destentor.nl",
+      "success": true,
+      "snapshotId": "destentor.nl/2025-09-13/23-27",
+      "timestamp": "2025-09-13T23:27:47+0200"
+    },
+    {
+      "domain": "gelderlander.nl",
+      "success": true,
+      "snapshotId": "gelderlander.nl/2025-09-13/23-27",
+      "timestamp": "2025-09-13T23:27:47+0200"
+    },
+    {
+      "domain": "tubantia.nl",
+      "success": true,
+      "snapshotId": "tubantia.nl/2025-09-13/23-27",
+      "timestamp": "2025-09-13T23:27:47+0200"
+    },
+    {
+      "domain": "bndestem.nl",
+      "success": true,
+      "snapshotId": "bndestem.nl/2025-09-13/23-27",
+      "timestamp": "2025-09-13T23:27:47+0200"
+    }
+  ]
+}
