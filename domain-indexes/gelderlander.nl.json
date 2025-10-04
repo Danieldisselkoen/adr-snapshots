@@ -2,11 +2,11 @@
   "domain": "gelderlander.nl",
   "snapshots": [
     {
-      "id": "gelderlander.nl/2025-10-05/00-13",
-      "timestamp": "2025-10-05T00:13:29+0200",
+      "id": "gelderlander.nl/2025-10-05/01-13",
+      "timestamp": "2025-10-05T01:13:26+0200",
       "date": "2025-10-05",
-      "hour": "00-13",
-      "path": "/snapshots/gelderlander.nl/2025-10-05/00-13/"
+      "hour": "01-13",
+      "path": "/snapshots/gelderlander.nl/2025-10-05/01-13/"
     }
   ]
 }
