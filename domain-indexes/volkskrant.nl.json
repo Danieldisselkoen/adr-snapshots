@@ -1,12 +1,12 @@
 {
-  "domain": "ad.nl",
+  "domain": "volkskrant.nl",
   "snapshots": [
     {
-      "id": "ad.nl/2025-11-25/12-05",
+      "id": "volkskrant.nl/2025-11-25/12-05",
       "timestamp": "2025-11-25T12:05:29+0100",
       "date": "2025-11-25",
       "hour": "12-05",
-      "path": "/snapshots/ad.nl/2025-11-25/12-05/"
+      "path": "/snapshots/volkskrant.nl/2025-11-25/12-05/"
     }
   ]
 }
