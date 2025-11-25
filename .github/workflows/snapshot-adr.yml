@@ -123,20 +123,8 @@ jobs:
             echo "⚠️ Fallback: generating new timestamps: $SNAPSHOT_DATE $SNAPSHOT_TIME"
           fi
 
-          # Create new snapshot entry
-          NEW_SNAPSHOT=$(cat <<'EOJSON'
-          {
-            "time": "'$SNAPSHOT_TIME'",
-            "timestamp": "'$SNAPSHOT_TIMESTAMP'",
-            "displayTime": "'${SNAPSHOT_TIME//-/:}'",
-            "domains": [
-              "ad.nl", "pzc.nl", "ed.nl", "bd.nl",
-              "destentor.nl", "gelderlander.nl",
-              "tubantia.nl", "bndestem.nl"
-            ]
-          }
-EOJSON
-          )
+          # Create new snapshot entry (not used directly, kept for reference)
+          echo "Creating snapshot entry for $SNAPSHOT_TIME"
 
           # Check if snapshots-index.json already exists and has snapshots for today
           if [ -f "snapshots/snapshots-index.json" ]; then
