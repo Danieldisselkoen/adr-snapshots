@@ -1,12 +1,12 @@
 {
-  "domain": "ad.nl",
+  "domain": "nos.nl",
   "snapshots": [
     {
-      "id": "ad.nl/2025-11-25/18-23",
+      "id": "nos.nl/2025-11-25/18-23",
       "timestamp": "2025-11-25T18:23:48+0100",
       "date": "2025-11-25",
       "hour": "18-23",
-      "path": "/snapshots/ad.nl/2025-11-25/18-23/"
+      "path": "/snapshots/nos.nl/2025-11-25/18-23/"
     }
   ]
 }
