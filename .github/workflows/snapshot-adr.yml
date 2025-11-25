@@ -2,7 +2,6 @@ name: ADR Hourly Snapshots
 
 on:
   schedule:
-    # Run every hour at minute 0
     - cron: '0 * * * *'
 
   workflow_dispatch:
@@ -29,7 +28,7 @@ jobs:
       - name: Clone private code repository
         run: |
           git clone https://github-actions:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/Danieldisselkoen/adr-brandguide.git ../adr-brandguide
-          echo "✅ Successfully cloned private repository"
+          echo "Successfully cloned private repository"
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -45,26 +44,14 @@ jobs:
       - name: Force cleanup of existing snapshots (if requested)
         if: github.event.inputs.force_cleanup == 'true'
         run: |
-          echo "🧹 Force cleanup enabled - preparing clean slate..."
-
-          echo "🧹 REMOVING ALL SNAPSHOTS for clean slate..."
-
-          # Remove all snapshot files (regardless of age)
-          find . -name "*.webp" -delete 2>/dev/null || echo "No webp files to clean"
-          find . -name "*.png" -delete 2>/dev/null || echo "No png files to clean"
-          find . -name "*.html" -not -name "README.md" -delete 2>/dev/null || echo "No html files to clean"
-          find . -name "metadata.json" -delete 2>/dev/null || echo "No metadata files to clean"
-
-          # Remove all domain directories (they'll be recreated)
-          rm -rf ad.nl bd.nl bndestem.nl destentor.nl ed.nl gelderlander.nl pzc.nl tubantia.nl 2>/dev/null || echo "No domain directories to clean"
-
-          # Remove old index files (keep only README.md and .git)
-          find . -maxdepth 1 -name "*.json" -delete 2>/dev/null || echo "No JSON files to clean"
-
-          # Clean domain-indexes directory if it exists
-          rm -rf domain-indexes 2>/dev/null || echo "No domain-indexes directory to clean"
-
-          echo "✅ Cleanup complete"
+          echo "Force cleanup enabled - preparing clean slate..."
+          find . -name "*.webp" -delete 2>/dev/null || true
+          find . -name "*.png" -delete 2>/dev/null || true
+          find . -name "metadata.json" -delete 2>/dev/null || true
+          rm -rf ad.nl bd.nl bndestem.nl destentor.nl ed.nl gelderlander.nl pzc.nl tubantia.nl 2>/dev/null || true
+          find . -maxdepth 1 -name "*.json" -delete 2>/dev/null || true
+          rm -rf domain-indexes 2>/dev/null || true
+          echo "Cleanup complete"
 
       - name: Create snapshots directory
         run: |
@@ -74,258 +61,144 @@ jobs:
       - name: Take snapshots
         run: |
           cd ../adr-brandguide
-
-          # Capture timestamp at START of snapshot process (Dutch time)
           export TZ=Europe/Amsterdam
           SNAPSHOT_TIME=$(date +"%H-%M")
           SNAPSHOT_DATE=$(date +"%Y-%m-%d")
           SNAPSHOT_TIMESTAMP=$(date +"%Y-%m-%dT%H:%M:%S%z")
 
-          echo "📸 Starting snapshots at $SNAPSHOT_DATE $SNAPSHOT_TIME ($SNAPSHOT_TIMESTAMP)"
+          echo "Starting snapshots at $SNAPSHOT_DATE $SNAPSHOT_TIME"
 
-          # Save timestamps to files for next step to ensure consistency
           echo "$SNAPSHOT_TIME" > snapshot_time.txt
           echo "$SNAPSHOT_DATE" > snapshot_date.txt
           echo "$SNAPSHOT_TIMESTAMP" > snapshot_timestamp.txt
 
-          # Pass timestamp to snapshot script
           if [ -n "${{ github.event.inputs.domains }}" ]; then
-            node scripts/snapshot-multi.js "${{ github.event.inputs.domains }}" \
-              --time="$SNAPSHOT_TIME" \
-              --date="$SNAPSHOT_DATE" \
-              --timestamp="$SNAPSHOT_TIMESTAMP"
+            node scripts/snapshot-multi.js "${{ github.event.inputs.domains }}" --time="$SNAPSHOT_TIME" --date="$SNAPSHOT_DATE" --timestamp="$SNAPSHOT_TIMESTAMP"
           else
-            node scripts/snapshot-multi.js \
-              --time="$SNAPSHOT_TIME" \
-              --date="$SNAPSHOT_DATE" \
-              --timestamp="$SNAPSHOT_TIMESTAMP"
+            node scripts/snapshot-multi.js --time="$SNAPSHOT_TIME" --date="$SNAPSHOT_DATE" --timestamp="$SNAPSHOT_TIMESTAMP"
           fi
         timeout-minutes: 10
 
       - name: Generate snapshots manifest and latest.json
         run: |
           cd ../adr-brandguide
-
-          # Read timestamp variables from environment (set in previous step)
           export TZ=Europe/Amsterdam
 
-          # Check if we have timestamp files from previous step
           if [ -f "snapshot_time.txt" ] && [ -f "snapshot_date.txt" ] && [ -f "snapshot_timestamp.txt" ]; then
             SNAPSHOT_TIME=$(cat snapshot_time.txt)
             SNAPSHOT_DATE=$(cat snapshot_date.txt)
             SNAPSHOT_TIMESTAMP=$(cat snapshot_timestamp.txt)
-            echo "📋 Using timestamps from snapshot step: $SNAPSHOT_DATE $SNAPSHOT_TIME"
+            echo "Using timestamps from snapshot step: $SNAPSHOT_DATE $SNAPSHOT_TIME"
           else
-            # Fallback: generate new timestamps (should not happen in normal flow)
             SNAPSHOT_TIME=$(date +"%H-%M")
             SNAPSHOT_DATE=$(date +"%Y-%m-%d")
             SNAPSHOT_TIMESTAMP=$(date +"%Y-%m-%dT%H:%M:%S%z")
-            echo "⚠️ Fallback: generating new timestamps: $SNAPSHOT_DATE $SNAPSHOT_TIME"
+            echo "Fallback: generating new timestamps: $SNAPSHOT_DATE $SNAPSHOT_TIME"
           fi
 
-          # Create new snapshot entry (not used directly, kept for reference)
-          echo "Creating snapshot entry for $SNAPSHOT_TIME"
+          DISPLAY_TIME="${SNAPSHOT_TIME//-/:}"
 
-          # Check if snapshots-index.json already exists and has snapshots for today
           if [ -f "snapshots/snapshots-index.json" ]; then
-            # Read existing file
-            EXISTING_DATE=$(cat snapshots/snapshots-index.json | grep '"date":' | sed 's/.*"date": *"\([^"]*\)".*/\1/')
+            EXISTING_DATE=$(grep -o '"date": *"[^"]*"' snapshots/snapshots-index.json | head -1 | sed 's/"date": *"\([^"]*\)"/\1/')
 
             if [ "$EXISTING_DATE" = "$SNAPSHOT_DATE" ]; then
-              echo "📋 Found existing snapshots for $SNAPSHOT_DATE, adding new timestamp..."
-
-              # Use Node.js to properly merge JSON (more reliable than bash JSON manipulation)
+              echo "Found existing snapshots for $SNAPSHOT_DATE, adding new timestamp..."
               node -e "
                 const fs = require('fs');
                 const existing = JSON.parse(fs.readFileSync('snapshots/snapshots-index.json', 'utf8'));
                 const newSnapshot = {
                   time: '$SNAPSHOT_TIME',
                   timestamp: '$SNAPSHOT_TIMESTAMP',
-                  displayTime: '${SNAPSHOT_TIME//-/:}',
+                  displayTime: '$DISPLAY_TIME',
                   domains: ['ad.nl', 'pzc.nl', 'ed.nl', 'bd.nl', 'destentor.nl', 'gelderlander.nl', 'tubantia.nl', 'bndestem.nl']
                 };
-
-                // Check if this timestamp already exists
                 const existingIndex = existing.snapshots.findIndex(s => s.time === '$SNAPSHOT_TIME');
                 if (existingIndex >= 0) {
-                  console.log('⚠️ Timestamp $SNAPSHOT_TIME already exists, updating...');
                   existing.snapshots[existingIndex] = newSnapshot;
                 } else {
-                  console.log('✅ Adding new timestamp $SNAPSHOT_TIME to existing snapshots');
                   existing.snapshots.push(newSnapshot);
                 }
-
-                // Sort snapshots by time
                 existing.snapshots.sort((a, b) => a.time.localeCompare(b.time));
-
                 fs.writeFileSync('snapshots/snapshots-index.json', JSON.stringify(existing, null, 2));
-                console.log('📋 Updated snapshots-index.json with', existing.snapshots.length, 'snapshots');
               "
             else
-              echo "📋 Different date found ($EXISTING_DATE vs $SNAPSHOT_DATE), creating new index..."
-              # Generate fresh snapshots-index.json for new date
-              cat > snapshots/snapshots-index.json <<EOF
-          {
-            "date": "$SNAPSHOT_DATE",
-            "snapshots": [
-              {
-                "time": "$SNAPSHOT_TIME",
-                "timestamp": "$SNAPSHOT_TIMESTAMP",
-                "displayTime": "${SNAPSHOT_TIME//-/:}",
-                "domains": [
-                  "ad.nl", "pzc.nl", "ed.nl", "bd.nl",
-                  "destentor.nl", "gelderlander.nl",
-                  "tubantia.nl", "bndestem.nl"
-                ]
-              }
-            ]
-          }
-EOF
+              echo "Different date found, creating new index..."
+              echo "{\"date\":\"$SNAPSHOT_DATE\",\"snapshots\":[{\"time\":\"$SNAPSHOT_TIME\",\"timestamp\":\"$SNAPSHOT_TIMESTAMP\",\"displayTime\":\"$DISPLAY_TIME\",\"domains\":[\"ad.nl\",\"pzc.nl\",\"ed.nl\",\"bd.nl\",\"destentor.nl\",\"gelderlander.nl\",\"tubantia.nl\",\"bndestem.nl\"]}]}" > snapshots/snapshots-index.json
             fi
           else
-            echo "📋 No existing snapshots-index.json found, creating new one..."
-            # Generate fresh snapshots-index.json
-            cat > snapshots/snapshots-index.json <<EOF
-          {
-            "date": "$SNAPSHOT_DATE",
-            "snapshots": [
-              {
-                "time": "$SNAPSHOT_TIME",
-                "timestamp": "$SNAPSHOT_TIMESTAMP",
-                "displayTime": "${SNAPSHOT_TIME//-/:}",
-                "domains": [
-                  "ad.nl", "pzc.nl", "ed.nl", "bd.nl",
-                  "destentor.nl", "gelderlander.nl",
-                  "tubantia.nl", "bndestem.nl"
-                ]
-              }
-            ]
-          }
-EOF
+            echo "No existing snapshots-index.json found, creating new one..."
+            echo "{\"date\":\"$SNAPSHOT_DATE\",\"snapshots\":[{\"time\":\"$SNAPSHOT_TIME\",\"timestamp\":\"$SNAPSHOT_TIMESTAMP\",\"displayTime\":\"$DISPLAY_TIME\",\"domains\":[\"ad.nl\",\"pzc.nl\",\"ed.nl\",\"bd.nl\",\"destentor.nl\",\"gelderlander.nl\",\"tubantia.nl\",\"bndestem.nl\"]}]}" > snapshots/snapshots-index.json
           fi
 
-          # Generate datum-specifieke index (snapshots-YYYY-MM-DD.json)
           cp snapshots/snapshots-index.json "snapshots/snapshots-$SNAPSHOT_DATE.json"
-          echo "✅ Created date-specific index: snapshots-$SNAPSHOT_DATE.json"
+          echo "Created date-specific index: snapshots-$SNAPSHOT_DATE.json"
 
-          # Generate latest.json for polling
-          cat > snapshots/latest.json <<EOF
-          {
-            "timestamp": "$SNAPSHOT_TIMESTAMP",
-            "date": "$SNAPSHOT_DATE",
-            "time": "$SNAPSHOT_TIME",
-            "displayTime": "${SNAPSHOT_TIME//-/:}",
-            "domains": [
-              "ad.nl", "pzc.nl", "ed.nl", "bd.nl",
-              "destentor.nl", "gelderlander.nl",
-              "tubantia.nl", "bndestem.nl"
-            ],
-            "status": "completed"
-          }
-EOF
+          echo "{\"timestamp\":\"$SNAPSHOT_TIMESTAMP\",\"date\":\"$SNAPSHOT_DATE\",\"time\":\"$SNAPSHOT_TIME\",\"displayTime\":\"$DISPLAY_TIME\",\"domains\":[\"ad.nl\",\"pzc.nl\",\"ed.nl\",\"bd.nl\",\"destentor.nl\",\"gelderlander.nl\",\"tubantia.nl\",\"bndestem.nl\"],\"status\":\"completed\"}" > snapshots/latest.json
 
-          echo "✅ Generated snapshots-index.json, date-specific index, and latest.json for $SNAPSHOT_DATE $SNAPSHOT_TIME"
-
+          echo "Generated manifest files for $SNAPSHOT_DATE $SNAPSHOT_TIME"
 
       - name: Copy snapshots and commit
         run: |
-          echo "📦 Copying snapshots to repository..."
-
-          # Configure git
+          echo "Copying snapshots to repository..."
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
 
-          # Read timestamps for merge
           SNAPSHOT_DATE_FOR_MERGE=$(cat ../adr-brandguide/snapshot_date.txt 2>/dev/null || date +"%Y-%m-%d")
 
-          # Check for existing snapshots-index.json (current day) and merge
           if [ -f "snapshots-index.json" ]; then
-            echo "📋 Found existing snapshots-index.json in repository, merging..."
+            echo "Found existing snapshots-index.json in repository, merging..."
             cp snapshots-index.json ../adr-brandguide/snapshots/existing-snapshots-index.json
           fi
 
-          # Check for existing date-specific index
           if [ -f "snapshots-$SNAPSHOT_DATE_FOR_MERGE.json" ]; then
-            echo "📋 Found existing date-specific index for $SNAPSHOT_DATE_FOR_MERGE, merging..."
+            echo "Found existing date-specific index for $SNAPSHOT_DATE_FOR_MERGE, merging..."
             cp "snapshots-$SNAPSHOT_DATE_FOR_MERGE.json" "../adr-brandguide/snapshots/existing-date-specific.json"
           fi
 
-          # Use Node.js to merge all existing snapshots
           cd ../adr-brandguide
           node -e "
             const fs = require('fs');
             const snapshotDate = '$SNAPSHOT_DATE_FOR_MERGE';
-
-            // Read our newly generated snapshots
             const newData = JSON.parse(fs.readFileSync('snapshots/snapshots-index.json', 'utf8'));
-
-            // Try to merge with existing date-specific index first (most reliable)
             let existing = { date: snapshotDate, snapshots: [] };
             if (fs.existsSync('snapshots/existing-date-specific.json')) {
-              console.log('📋 Merging with existing date-specific index');
               existing = JSON.parse(fs.readFileSync('snapshots/existing-date-specific.json', 'utf8'));
             } else if (fs.existsSync('snapshots/existing-snapshots-index.json')) {
-              console.log('📋 Merging with existing snapshots-index.json');
               const existingGeneral = JSON.parse(fs.readFileSync('snapshots/existing-snapshots-index.json', 'utf8'));
               if (existingGeneral.date === snapshotDate) {
                 existing = existingGeneral;
               }
             }
-
-            // Merge snapshots if dates match
             if (existing.date === newData.date) {
-              console.log('📋 Merging snapshots for date:', existing.date);
-
-              // Add existing snapshots that aren't in new data
               for (const existingSnapshot of existing.snapshots) {
                 const existsInNew = newData.snapshots.find(s => s.time === existingSnapshot.time);
                 if (!existsInNew) {
-                  console.log('📋 Preserving existing snapshot:', existingSnapshot.time);
                   newData.snapshots.push(existingSnapshot);
                 }
               }
-
-              // Sort all snapshots by time
               newData.snapshots.sort((a, b) => a.time.localeCompare(b.time));
-
-              console.log('📋 Final merged result:', newData.snapshots.length, 'snapshots for', newData.date);
-            } else {
-              console.log('📋 Different dates or no existing data - using new snapshots only');
             }
-
-            // Write the final merged results
             fs.writeFileSync('snapshots/snapshots-index.json', JSON.stringify(newData, null, 2));
             fs.writeFileSync('snapshots/snapshots-' + newData.date + '.json', JSON.stringify(newData, null, 2));
-
-            console.log('✅ Updated both snapshots-index.json and snapshots-' + newData.date + '.json');
           "
           cd ../${{ github.event.repository.name }}
 
-          # Copy new snapshots (preserving existing ones)
           if [ -d "../adr-brandguide/snapshots" ] && [ "$(ls -A ../adr-brandguide/snapshots 2>/dev/null)" ]; then
             cp -r ../adr-brandguide/snapshots/* . 2>/dev/null || echo "Failed to copy snapshots"
-
-            # Clean up temporary merge files that shouldn't be in repository
-            rm -f existing-snapshots-index.json existing-date-specific.json 2>/dev/null || echo "No temporary files to clean"
-
-            # Add, commit and push
+            rm -f existing-snapshots-index.json existing-date-specific.json 2>/dev/null || true
             git add .
-
-            # Use saved timestamp for consistent commit message
             SNAPSHOT_TIME_FOR_COMMIT=$(cat ../adr-brandguide/snapshot_time.txt 2>/dev/null || echo "unknown")
             SNAPSHOT_DATE_FOR_COMMIT=$(cat ../adr-brandguide/snapshot_date.txt 2>/dev/null || echo "unknown")
-
-            # Create commit message
-            COMMIT_MSG="Add snapshots from $SNAPSHOT_DATE_FOR_COMMIT ${SNAPSHOT_TIME_FOR_COMMIT//-/:}"
-
+            DISPLAY_TIME="${SNAPSHOT_TIME_FOR_COMMIT//-/:}"
+            COMMIT_MSG="Add snapshots from $SNAPSHOT_DATE_FOR_COMMIT $DISPLAY_TIME"
             if git commit -m "$COMMIT_MSG"; then
               git push
-              echo "✅ Snapshots pushed successfully"
+              echo "Snapshots pushed successfully"
             else
               echo "No changes to commit"
             fi
           else
-            echo "No snapshots directory found at ../adr-brandguide/snapshots or it's empty"
+            echo "No snapshots directory found"
           fi
 
       - name: Upload artifacts (for debugging)
@@ -340,5 +213,4 @@ EOF
 
       - name: Notify on failure
         if: failure() && github.event_name == 'schedule'
-        run: |
-          echo "Snapshot workflow failed at $(date)"
+        run: echo "Snapshot workflow failed at $(date)"
