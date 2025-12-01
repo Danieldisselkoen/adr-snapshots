@@ -1,0 +1,16 @@
+{
+  "id": "volkskrant.nl/2025-12-01/09-37",
+  "domain": "volkskrant.nl",
+  "url": "https://www.volkskrant.nl",
+  "timestamp": "2025-12-01T09:37:14+0100",
+  "date": "2025-12-01",
+  "hour": "09-37",
+  "viewport": {
+    "width": 390,
+    "height": 1280
+  },
+  "fileSize": {
+    "screenshot": 207158,
+    "html": 560694
+  }
+}
