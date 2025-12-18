@@ -25,6 +25,21 @@ jobs:
       - name: Checkout snapshots repository
         uses: actions/checkout@v3
 
+      - name: Free disk space
+        run: |
+          echo "Disk space before cleanup:"
+          df -h /
+          echo ""
+          echo "Removing unnecessary pre-installed software..."
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /opt/hostedtoolcache/CodeQL || true
+          sudo docker system prune -af || true
+          echo ""
+          echo "Disk space after cleanup:"
+          df -h /
+
       - name: Clone private code repository
         run: |
           git clone https://github-actions:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/Danieldisselkoen/adr-brandguide.git ../adr-brandguide
