@@ -191,7 +191,7 @@ jobs:
           if [ -d "../adr-brandguide/snapshots" ] && [ "$(ls -A ../adr-brandguide/snapshots 2>/dev/null)" ]; then
             cp -r ../adr-brandguide/snapshots/* . 2>/dev/null || echo "Failed to copy snapshots"
             rm -f existing-snapshots-index.json existing-date-specific.json 2>/dev/null || true
-            git add .
+            git add --sparse .
             SNAPSHOT_TIME_FOR_COMMIT=$(cat ../adr-brandguide/snapshot_time.txt 2>/dev/null || echo "unknown")
             SNAPSHOT_DATE_FOR_COMMIT=$(cat ../adr-brandguide/snapshot_date.txt 2>/dev/null || echo "unknown")
             DISPLAY_TIME="${SNAPSHOT_TIME_FOR_COMMIT//-/:}"
