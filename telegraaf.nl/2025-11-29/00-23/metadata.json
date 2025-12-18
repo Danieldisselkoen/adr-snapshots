@@ -1,0 +1,16 @@
+{
+  "id": "telegraaf.nl/2025-11-29/00-23",
+  "domain": "telegraaf.nl",
+  "url": "https://www.telegraaf.nl",
+  "timestamp": "2025-11-29T00:23:14+0100",
+  "date": "2025-11-29",
+  "hour": "00-23",
+  "viewport": {
+    "width": 390,
+    "height": 1280
+  },
+  "fileSize": {
+    "screenshot": 307296,
+    "html": 732344
+  }
+}

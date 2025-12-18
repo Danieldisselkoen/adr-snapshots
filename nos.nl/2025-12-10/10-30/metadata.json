@@ -1,0 +1,16 @@
+{
+  "id": "nos.nl/2025-12-10/10-30",
+  "domain": "nos.nl",
+  "url": "https://www.nos.nl",
+  "timestamp": "2025-12-10T10:30:06+0100",
+  "date": "2025-12-10",
+  "hour": "10-30",
+  "viewport": {
+    "width": 390,
+    "height": 1280
+  },
+  "fileSize": {
+    "screenshot": 296584,
+    "html": 399319
+  }
+}
