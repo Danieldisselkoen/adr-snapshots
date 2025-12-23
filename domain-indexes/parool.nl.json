@@ -2,11 +2,11 @@
   "domain": "parool.nl",
   "snapshots": [
     {
-      "id": "parool.nl/2025-12-23/19-33",
-      "timestamp": "2025-12-23T19:33:10+0100",
+      "id": "parool.nl/2025-12-23/20-18",
+      "timestamp": "2025-12-23T20:18:35+0100",
       "date": "2025-12-23",
-      "hour": "19-33",
-      "path": "/snapshots/parool.nl/2025-12-23/19-33/"
+      "hour": "20-18",
+      "path": "/snapshots/parool.nl/2025-12-23/20-18/"
     }
   ]
 }
