@@ -1,5 +1,5 @@
 {
-  "lastUpdate": "2025-12-24T00:20:21+0100",
+  "lastUpdate": "2025-12-24T02:45:36+0100",
   "domains": [
     "ad.nl",
     "pzc.nl",
@@ -21,92 +21,92 @@
     {
       "domain": "ad.nl",
       "success": true,
-      "snapshotId": "ad.nl/2025-12-24/00-20",
-      "timestamp": "2025-12-24T00:20:21+0100"
+      "snapshotId": "ad.nl/2025-12-24/02-45",
+      "timestamp": "2025-12-24T02:45:36+0100"
     },
     {
       "domain": "pzc.nl",
       "success": true,
-      "snapshotId": "pzc.nl/2025-12-24/00-20",
-      "timestamp": "2025-12-24T00:20:21+0100"
+      "snapshotId": "pzc.nl/2025-12-24/02-45",
+      "timestamp": "2025-12-24T02:45:36+0100"
     },
     {
       "domain": "ed.nl",
       "success": true,
-      "snapshotId": "ed.nl/2025-12-24/00-20",
-      "timestamp": "2025-12-24T00:20:21+0100"
+      "snapshotId": "ed.nl/2025-12-24/02-45",
+      "timestamp": "2025-12-24T02:45:36+0100"
     },
     {
       "domain": "bd.nl",
       "success": true,
-      "snapshotId": "bd.nl/2025-12-24/00-20",
-      "timestamp": "2025-12-24T00:20:21+0100"
+      "snapshotId": "bd.nl/2025-12-24/02-45",
+      "timestamp": "2025-12-24T02:45:36+0100"
     },
     {
       "domain": "destentor.nl",
       "success": true,
-      "snapshotId": "destentor.nl/2025-12-24/00-20",
-      "timestamp": "2025-12-24T00:20:21+0100"
+      "snapshotId": "destentor.nl/2025-12-24/02-45",
+      "timestamp": "2025-12-24T02:45:36+0100"
     },
     {
       "domain": "gelderlander.nl",
       "success": true,
-      "snapshotId": "gelderlander.nl/2025-12-24/00-20",
-      "timestamp": "2025-12-24T00:20:21+0100"
+      "snapshotId": "gelderlander.nl/2025-12-24/02-45",
+      "timestamp": "2025-12-24T02:45:36+0100"
     },
     {
       "domain": "tubantia.nl",
       "success": true,
-      "snapshotId": "tubantia.nl/2025-12-24/00-20",
-      "timestamp": "2025-12-24T00:20:21+0100"
+      "snapshotId": "tubantia.nl/2025-12-24/02-45",
+      "timestamp": "2025-12-24T02:45:36+0100"
     },
     {
       "domain": "bndestem.nl",
       "success": true,
-      "snapshotId": "bndestem.nl/2025-12-24/00-20",
-      "timestamp": "2025-12-24T00:20:21+0100"
+      "snapshotId": "bndestem.nl/2025-12-24/02-45",
+      "timestamp": "2025-12-24T02:45:36+0100"
     },
     {
       "domain": "nos.nl",
       "success": true,
-      "snapshotId": "nos.nl/2025-12-24/00-20",
-      "timestamp": "2025-12-24T00:20:21+0100"
+      "snapshotId": "nos.nl/2025-12-24/02-45",
+      "timestamp": "2025-12-24T02:45:36+0100"
     },
     {
       "domain": "nu.nl",
       "success": true,
-      "snapshotId": "nu.nl/2025-12-24/00-20",
-      "timestamp": "2025-12-24T00:20:21+0100"
+      "snapshotId": "nu.nl/2025-12-24/02-45",
+      "timestamp": "2025-12-24T02:45:36+0100"
     },
     {
       "domain": "volkskrant.nl",
       "success": true,
-      "snapshotId": "volkskrant.nl/2025-12-24/00-20",
-      "timestamp": "2025-12-24T00:20:21+0100"
+      "snapshotId": "volkskrant.nl/2025-12-24/02-45",
+      "timestamp": "2025-12-24T02:45:36+0100"
     },
     {
       "domain": "trouw.nl",
       "success": true,
-      "snapshotId": "trouw.nl/2025-12-24/00-20",
-      "timestamp": "2025-12-24T00:20:21+0100"
+      "snapshotId": "trouw.nl/2025-12-24/02-45",
+      "timestamp": "2025-12-24T02:45:36+0100"
     },
     {
       "domain": "parool.nl",
       "success": true,
-      "snapshotId": "parool.nl/2025-12-24/00-20",
-      "timestamp": "2025-12-24T00:20:21+0100"
+      "snapshotId": "parool.nl/2025-12-24/02-45",
+      "timestamp": "2025-12-24T02:45:36+0100"
     },
     {
       "domain": "nrc.nl",
       "success": true,
-      "snapshotId": "nrc.nl/2025-12-24/00-20",
-      "timestamp": "2025-12-24T00:20:21+0100"
+      "snapshotId": "nrc.nl/2025-12-24/02-45",
+      "timestamp": "2025-12-24T02:45:36+0100"
     },
     {
       "domain": "telegraaf.nl",
       "success": true,
-      "snapshotId": "telegraaf.nl/2025-12-24/00-20",
-      "timestamp": "2025-12-24T00:20:21+0100"
+      "snapshotId": "telegraaf.nl/2025-12-24/02-45",
+      "timestamp": "2025-12-24T02:45:36+0100"
     }
   ]
 }
