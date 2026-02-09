@@ -1,0 +1,16 @@
+{
+  "id": "volkskrant.nl/2026-02-09/16-23",
+  "domain": "volkskrant.nl",
+  "url": "https://www.volkskrant.nl",
+  "timestamp": "2026-02-09T16:23:32+0100",
+  "date": "2026-02-09",
+  "hour": "16-23",
+  "viewport": {
+    "width": 390,
+    "height": 1280
+  },
+  "fileSize": {
+    "screenshot": 190674,
+    "html": 528770
+  }
+}
