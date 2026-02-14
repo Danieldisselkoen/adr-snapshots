@@ -2,11 +2,11 @@
   "domain": "pzc.nl",
   "snapshots": [
     {
-      "id": "pzc.nl/2026-02-14/14-20",
-      "timestamp": "2026-02-14T14:20:55+0100",
+      "id": "pzc.nl/2026-02-14/15-10",
+      "timestamp": "2026-02-14T15:10:32+0100",
       "date": "2026-02-14",
-      "hour": "14-20",
-      "path": "/snapshots/pzc.nl/2026-02-14/14-20/"
+      "hour": "15-10",
+      "path": "/snapshots/pzc.nl/2026-02-14/15-10/"
     }
   ]
 }
