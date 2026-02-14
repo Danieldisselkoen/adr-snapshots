@@ -2,11 +2,11 @@
   "domain": "nrc.nl",
   "snapshots": [
     {
-      "id": "nrc.nl/2026-02-14/22-08",
-      "timestamp": "2026-02-14T22:08:17+0100",
+      "id": "nrc.nl/2026-02-14/23-06",
+      "timestamp": "2026-02-14T23:06:43+0100",
       "date": "2026-02-14",
-      "hour": "22-08",
-      "path": "/snapshots/nrc.nl/2026-02-14/22-08/"
+      "hour": "23-06",
+      "path": "/snapshots/nrc.nl/2026-02-14/23-06/"
     }
   ]
 }
