@@ -20,6 +20,11 @@ on:
 jobs:
   snapshot:
     runs-on: ubuntu-latest
+    outputs:
+      cloudflare_failed: ${{ steps.check-cloudflare.outputs.cloudflare_failed }}
+      snapshot_time: ${{ steps.check-cloudflare.outputs.snapshot_time }}
+      snapshot_date: ${{ steps.check-cloudflare.outputs.snapshot_date }}
+      snapshot_timestamp: ${{ steps.check-cloudflare.outputs.snapshot_timestamp }}
 
     steps:
       - name: Checkout snapshots repository (sparse - only JSON files)
@@ -83,6 +88,30 @@ jobs:
             node scripts/snapshot-multi.js --time="$SNAPSHOT_TIME" --date="$SNAPSHOT_DATE" --timestamp="$SNAPSHOT_TIMESTAMP"
           fi
         timeout-minutes: 10
+
+      - name: Check Cloudflare failures and set outputs
+        id: check-cloudflare
+        run: |
+          cd ../adr-brandguide
+          SNAPSHOT_TIME=$(cat snapshot_time.txt 2>/dev/null || echo "")
+          SNAPSHOT_DATE=$(cat snapshot_date.txt 2>/dev/null || echo "")
+          SNAPSHOT_TIMESTAMP=$(cat snapshot_timestamp.txt 2>/dev/null || echo "")
+
+          echo "snapshot_time=$SNAPSHOT_TIME" >> $GITHUB_OUTPUT
+          echo "snapshot_date=$SNAPSHOT_DATE" >> $GITHUB_OUTPUT
+          echo "snapshot_timestamp=$SNAPSHOT_TIMESTAMP" >> $GITHUB_OUTPUT
+
+          if [ -f "snapshots/cloudflare-failed.txt" ]; then
+            CF_FAILED=$(cat snapshots/cloudflare-failed.txt)
+            echo "cloudflare_failed=$CF_FAILED" >> $GITHUB_OUTPUT
+            if [ -n "$CF_FAILED" ]; then
+              echo "🚫 Cloudflare-geblokkeerde domeinen: $CF_FAILED"
+            else
+              echo "✅ Geen Cloudflare blokkades gedetecteerd"
+            fi
+          else
+            echo "cloudflare_failed=" >> $GITHUB_OUTPUT
+          fi
 
       - name: Generate snapshots manifest and latest.json
         run: |
@@ -219,3 +248,148 @@ jobs:
       - name: Notify on failure
         if: failure() && github.event_name == 'schedule'
         run: echo "Snapshot workflow failed at $(date)"
+
+  # Retry Cloudflare-geblokkeerde domeinen op nieuwe runner (nieuw IP)
+  retry-cloudflare:
+    needs: snapshot
+    runs-on: ubuntu-latest
+    if: needs.snapshot.outputs.cloudflare_failed != ''
+
+    steps:
+      - name: Checkout snapshots repository (sparse)
+        uses: actions/checkout@v3
+        with:
+          sparse-checkout: |
+            *.json
+            .github
+          sparse-checkout-cone-mode: false
+
+      - name: Clone private code repository
+        run: |
+          git clone https://github-actions:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/Danieldisselkoen/adr-brandguide.git ../adr-brandguide
+          echo "Successfully cloned private repository"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          cd ../adr-brandguide
+          npm ci
+          npm install puppeteer
+
+      - name: Create snapshots directory
+        run: |
+          cd ../adr-brandguide
+          mkdir -p snapshots
+
+      - name: Retry Cloudflare-geblokkeerde domeinen
+        run: |
+          cd ../adr-brandguide
+          CF_DOMAINS="${{ needs.snapshot.outputs.cloudflare_failed }}"
+          SNAPSHOT_TIME="${{ needs.snapshot.outputs.snapshot_time }}"
+          SNAPSHOT_DATE="${{ needs.snapshot.outputs.snapshot_date }}"
+          SNAPSHOT_TIMESTAMP="${{ needs.snapshot.outputs.snapshot_timestamp }}"
+
+          echo "🔄 Retry van Cloudflare-geblokkeerde domeinen: $CF_DOMAINS"
+          echo "📅 Gebruik originele timestamp: $SNAPSHOT_DATE $SNAPSHOT_TIME"
+
+          node scripts/snapshot-multi.js "$CF_DOMAINS" \
+            --time="$SNAPSHOT_TIME" \
+            --date="$SNAPSHOT_DATE" \
+            --timestamp="$SNAPSHOT_TIMESTAMP"
+        timeout-minutes: 10
+
+      - name: Upload retry snapshots en update manifest
+        run: |
+          echo "📦 Pushing retry snapshots..."
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+          CF_DOMAINS="${{ needs.snapshot.outputs.cloudflare_failed }}"
+          SNAPSHOT_TIME="${{ needs.snapshot.outputs.snapshot_time }}"
+          SNAPSHOT_DATE="${{ needs.snapshot.outputs.snapshot_date }}"
+
+          # Check of retry nog steeds gefaald is
+          STILL_FAILED=""
+          if [ -f "../adr-brandguide/snapshots/cloudflare-failed.txt" ]; then
+            STILL_FAILED=$(cat ../adr-brandguide/snapshots/cloudflare-failed.txt)
+          fi
+
+          # Update manifest met retry-resultaten
+          cd ../adr-brandguide
+          node -e "
+            const fs = require('fs');
+            const cfDomains = '$CF_DOMAINS'.split(',').filter(d => d.trim());
+            const stillFailed = '$STILL_FAILED'.split(',').filter(d => d.trim());
+            const nowSucceeded = cfDomains.filter(d => !stillFailed.includes(d));
+
+            if (nowSucceeded.length > 0) {
+              console.log('✅ Retry succesvol voor:', nowSucceeded.join(', '));
+            }
+            if (stillFailed.length > 0) {
+              console.log('❌ Nog steeds geblokkeerd:', stillFailed.join(', '));
+            }
+          "
+          cd ../${{ github.event.repository.name }}
+
+          # Kopieer retry snapshot bestanden
+          for domain in $(echo "$CF_DOMAINS" | tr ',' ' '); do
+            if [ -d "../adr-brandguide/snapshots/$domain" ]; then
+              cp -r "../adr-brandguide/snapshots/$domain" . 2>/dev/null || echo "Failed to copy $domain"
+              echo "📦 Gekopieerd: $domain"
+            fi
+          done
+
+          # Update het manifest: voeg geretriede domeinen toe aan het bestaande timeslot
+          node -e "
+            const fs = require('fs');
+            const cfDomains = '$CF_DOMAINS'.split(',').filter(d => d.trim());
+            const stillFailed = '$STILL_FAILED'.split(',').filter(d => d.trim());
+            const nowSucceeded = cfDomains.filter(d => !stillFailed.includes(d));
+
+            if (fs.existsSync('snapshots-index.json') && nowSucceeded.length > 0) {
+              const index = JSON.parse(fs.readFileSync('snapshots-index.json', 'utf8'));
+              const slot = index.snapshots.find(s => s.time === '$SNAPSHOT_TIME');
+              if (slot) {
+                for (const domain of nowSucceeded) {
+                  if (!slot.domains.includes(domain)) {
+                    slot.domains.push(domain);
+                    console.log('✅ Domein toegevoegd aan manifest:', domain);
+                  }
+                }
+                fs.writeFileSync('snapshots-index.json', JSON.stringify(index, null, 2));
+                fs.writeFileSync('snapshots-$SNAPSHOT_DATE.json', JSON.stringify(index, null, 2));
+                console.log('📋 Manifest bijgewerkt met retry-resultaten');
+              }
+            }
+
+            if (fs.existsSync('latest.json') && nowSucceeded.length > 0) {
+              const latest = JSON.parse(fs.readFileSync('latest.json', 'utf8'));
+              for (const domain of nowSucceeded) {
+                if (!latest.domains.includes(domain)) {
+                  latest.domains.push(domain);
+                }
+              }
+              if (stillFailed.length > 0) {
+                latest.cloudflareBlocked = stillFailed;
+              } else {
+                delete latest.cloudflareBlocked;
+              }
+              fs.writeFileSync('latest.json', JSON.stringify(latest, null, 2));
+            }
+          "
+
+          # Commit en push
+          git add --sparse .
+          DISPLAY_TIME="${SNAPSHOT_TIME//-/:}"
+          COMMIT_MSG="Retry Cloudflare-geblokkeerde domeinen: $CF_DOMAINS ($SNAPSHOT_DATE $DISPLAY_TIME)"
+
+          if git commit -m "$COMMIT_MSG"; then
+            git push
+            echo "✅ Retry snapshots gepusht"
+          else
+            echo "Geen wijzigingen om te committen"
+          fi
