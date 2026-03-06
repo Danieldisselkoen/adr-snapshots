@@ -337,6 +337,10 @@ jobs:
           "
           cd ../${{ github.event.repository.name }}
 
+          # Eerst pullen zodat we de laatste versie van JSON bestanden hebben
+          # (snapshot job kan net gepusht hebben)
+          git pull --rebase || true
+
           # Kopieer retry snapshot bestanden
           for domain in $(echo "$CF_DOMAINS" | tr ',' ' '); do
             if [ -d "../adr-brandguide/snapshots/$domain" ]; then
@@ -346,6 +350,7 @@ jobs:
           done
 
           # Update het manifest: voeg geretriede domeinen toe aan het bestaande timeslot
+          # Nu werken we op de GEPULLDE versie van de JSON bestanden (geen conflict meer)
           node -e "
             const fs = require('fs');
             const cfDomains = '$CF_DOMAINS'.split(',').filter(d => d.trim());
@@ -390,9 +395,26 @@ jobs:
           COMMIT_MSG="Retry Cloudflare-geblokkeerde domeinen: $CF_DOMAINS ($SNAPSHOT_DATE $DISPLAY_TIME)"
 
           if git commit -m "$COMMIT_MSG"; then
-            # Pull-rebase-push met retry-loop om race conditions te voorkomen
-            for i in 1 2 3; do git pull --rebase && git push && break || sleep 2; done
-            echo "✅ Retry snapshots gepusht"
+            # Push met rebase-retry als fallback
+            PUSH_SUCCESS=false
+            for i in 1 2 3; do
+              if git push; then
+                PUSH_SUCCESS=true
+                break
+              fi
+              echo "⚠️ Push poging $i mislukt, rebase en opnieuw..."
+              git pull --rebase -X theirs || {
+                echo "⚠️ Rebase conflict, abort en force-apply onze wijzigingen..."
+                git rebase --abort 2>/dev/null || true
+                git pull -X theirs
+              }
+              sleep 2
+            done
+            if $PUSH_SUCCESS; then
+              echo "✅ Retry snapshots gepusht"
+            else
+              echo "❌ Push mislukt na 3 pogingen"
+            fi
           else
             echo "Geen wijzigingen om te committen"
           fi
