@@ -302,6 +302,21 @@
         "bndestem.nl",
         "telegraaf.nl"
       ]
+    },
+    {
+      "time": "15-04",
+      "timestamp": "2026-03-08T15:04:51+0100",
+      "displayTime": "15:04",
+      "domains": [
+        "ad.nl",
+        "pzc.nl",
+        "ed.nl",
+        "bd.nl",
+        "destentor.nl",
+        "gelderlander.nl",
+        "tubantia.nl",
+        "bndestem.nl"
+      ]
     }
   ]
 }
