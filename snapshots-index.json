@@ -32,6 +32,21 @@
         "nieuwsblad.be",
         "destandaard.be"
       ]
+    },
+    {
+      "time": "06-20",
+      "timestamp": "2026-03-10T06:20:12+0100",
+      "displayTime": "06:20",
+      "domains": [
+        "ad.nl",
+        "pzc.nl",
+        "ed.nl",
+        "bd.nl",
+        "destentor.nl",
+        "gelderlander.nl",
+        "tubantia.nl",
+        "bndestem.nl"
+      ]
     }
   ]
 }
