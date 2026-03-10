@@ -1,0 +1,16 @@
+{
+  "id": "nrc.nl/2026-03-10/11-12",
+  "domain": "nrc.nl",
+  "url": "https://www.nrc.nl",
+  "timestamp": "2026-03-10T11:12:45+0100",
+  "date": "2026-03-10",
+  "hour": "11-12",
+  "viewport": {
+    "width": 390,
+    "height": 1280
+  },
+  "fileSize": {
+    "screenshot": 228644,
+    "html": 372600
+  }
+}
