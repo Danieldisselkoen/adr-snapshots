@@ -1,18 +1,1 @@
-{
-  "timestamp": "2026-03-16T05:51:50+0100",
-  "date": "2026-03-16",
-  "time": "05-51",
-  "displayTime": "05:51",
-  "domains": [
-    "ad.nl",
-    "pzc.nl",
-    "ed.nl",
-    "bd.nl",
-    "destentor.nl",
-    "gelderlander.nl",
-    "tubantia.nl",
-    "bndestem.nl",
-    "destandaard.be"
-  ],
-  "status": "completed"
-}
+{"timestamp":"2026-03-16T06:18:31+0100","date":"2026-03-16","time":"06-18","displayTime":"06:18","domains":["ad.nl","pzc.nl","ed.nl","bd.nl","destentor.nl","gelderlander.nl","tubantia.nl","bndestem.nl"],"status":"completed"}
