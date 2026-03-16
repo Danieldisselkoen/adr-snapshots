@@ -292,6 +292,21 @@
         "bndestem.nl",
         "destandaard.be"
       ]
+    },
+    {
+      "time": "15-01",
+      "timestamp": "2026-03-16T15:01:38+0100",
+      "displayTime": "15:01",
+      "domains": [
+        "ad.nl",
+        "pzc.nl",
+        "ed.nl",
+        "bd.nl",
+        "destentor.nl",
+        "gelderlander.nl",
+        "tubantia.nl",
+        "bndestem.nl"
+      ]
     }
   ]
 }
