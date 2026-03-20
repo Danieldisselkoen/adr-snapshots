@@ -281,6 +281,21 @@
         "telegraaf.nl",
         "nieuwsblad.be"
       ]
+    },
+    {
+      "time": "14-25",
+      "timestamp": "2026-03-20T14:25:47+0100",
+      "displayTime": "14:25",
+      "domains": [
+        "ad.nl",
+        "pzc.nl",
+        "ed.nl",
+        "bd.nl",
+        "destentor.nl",
+        "gelderlander.nl",
+        "tubantia.nl",
+        "bndestem.nl"
+      ]
     }
   ]
 }
