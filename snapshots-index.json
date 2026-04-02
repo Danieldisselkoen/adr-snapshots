@@ -504,6 +504,21 @@
         "bndestem.nl",
         "nieuwsblad.be"
       ]
+    },
+    {
+      "time": "21-48",
+      "timestamp": "2026-04-02T21:48:33+0200",
+      "displayTime": "21:48",
+      "domains": [
+        "ad.nl",
+        "pzc.nl",
+        "ed.nl",
+        "bd.nl",
+        "destentor.nl",
+        "gelderlander.nl",
+        "tubantia.nl",
+        "bndestem.nl"
+      ]
     }
   ]
 }
