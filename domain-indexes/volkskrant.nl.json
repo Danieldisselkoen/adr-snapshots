@@ -2,11 +2,11 @@
   "domain": "volkskrant.nl",
   "snapshots": [
     {
-      "id": "volkskrant.nl/2026-04-03/20-10",
-      "timestamp": "2026-04-03T20:10:22+0200",
+      "id": "volkskrant.nl/2026-04-03/20-47",
+      "timestamp": "2026-04-03T20:47:59+0200",
       "date": "2026-04-03",
-      "hour": "20-10",
-      "path": "/snapshots/volkskrant.nl/2026-04-03/20-10/"
+      "hour": "20-47",
+      "path": "/snapshots/volkskrant.nl/2026-04-03/20-47/"
     }
   ]
 }
