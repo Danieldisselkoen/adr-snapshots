@@ -1,5 +1,5 @@
 {
-  "lastUpdate": "2026-04-05T10:47:28+0200",
+  "lastUpdate": "2026-04-05T11:13:58+0200",
   "domains": [
     "ad.nl",
     "pzc.nl",
@@ -27,128 +27,128 @@
     {
       "domain": "ad.nl",
       "success": true,
-      "snapshotId": "ad.nl/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "ad.nl/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     },
     {
       "domain": "pzc.nl",
       "success": true,
-      "snapshotId": "pzc.nl/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "pzc.nl/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     },
     {
       "domain": "ed.nl",
       "success": true,
-      "snapshotId": "ed.nl/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "ed.nl/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     },
     {
       "domain": "bd.nl",
       "success": true,
-      "snapshotId": "bd.nl/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "bd.nl/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     },
     {
       "domain": "destentor.nl",
       "success": true,
-      "snapshotId": "destentor.nl/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "destentor.nl/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     },
     {
       "domain": "gelderlander.nl",
       "success": true,
-      "snapshotId": "gelderlander.nl/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "gelderlander.nl/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     },
     {
       "domain": "tubantia.nl",
       "success": true,
-      "snapshotId": "tubantia.nl/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "tubantia.nl/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     },
     {
       "domain": "bndestem.nl",
       "success": true,
-      "snapshotId": "bndestem.nl/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "bndestem.nl/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     },
     {
       "domain": "nos.nl",
       "success": true,
-      "snapshotId": "nos.nl/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "nos.nl/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     },
     {
       "domain": "nu.nl",
       "success": true,
-      "snapshotId": "nu.nl/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "nu.nl/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     },
     {
       "domain": "volkskrant.nl",
       "success": true,
-      "snapshotId": "volkskrant.nl/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "volkskrant.nl/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     },
     {
       "domain": "trouw.nl",
       "success": true,
-      "snapshotId": "trouw.nl/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "trouw.nl/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     },
     {
       "domain": "parool.nl",
       "success": true,
-      "snapshotId": "parool.nl/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "parool.nl/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     },
     {
       "domain": "nrc.nl",
       "success": true,
-      "snapshotId": "nrc.nl/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "nrc.nl/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     },
     {
       "domain": "telegraaf.nl",
       "success": true,
-      "snapshotId": "telegraaf.nl/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "telegraaf.nl/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     },
     {
       "domain": "hln.be",
       "success": true,
-      "snapshotId": "hln.be/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "hln.be/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     },
     {
       "domain": "demorgen.be",
       "success": true,
-      "snapshotId": "demorgen.be/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "demorgen.be/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     },
     {
       "domain": "humo.be",
       "success": true,
-      "snapshotId": "humo.be/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "humo.be/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     },
     {
       "domain": "vrtnws.be",
       "success": true,
-      "snapshotId": "vrtnws.be/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "vrtnws.be/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     },
     {
       "domain": "nieuwsblad.be",
       "success": true,
-      "snapshotId": "nieuwsblad.be/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "nieuwsblad.be/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     },
     {
       "domain": "destandaard.be",
       "success": true,
-      "snapshotId": "destandaard.be/2026-04-05/10-47",
-      "timestamp": "2026-04-05T10:47:28+0200"
+      "snapshotId": "destandaard.be/2026-04-05/11-13",
+      "timestamp": "2026-04-05T11:13:58+0200"
     }
   ]
 }
