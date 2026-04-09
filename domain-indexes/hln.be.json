@@ -2,11 +2,11 @@
   "domain": "hln.be",
   "snapshots": [
     {
-      "id": "hln.be/2026-04-09/22-16",
-      "timestamp": "2026-04-09T22:16:15+0200",
+      "id": "hln.be/2026-04-09/22-48",
+      "timestamp": "2026-04-09T22:48:40+0200",
       "date": "2026-04-09",
-      "hour": "22-16",
-      "path": "/snapshots/hln.be/2026-04-09/22-16/"
+      "hour": "22-48",
+      "path": "/snapshots/hln.be/2026-04-09/22-48/"
     }
   ]
 }
