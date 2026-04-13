@@ -2,11 +2,11 @@
   "domain": "demorgen.be",
   "snapshots": [
     {
-      "id": "demorgen.be/2026-04-13/11-11",
-      "timestamp": "2026-04-13T11:11:33+0200",
+      "id": "demorgen.be/2026-04-13/11-34",
+      "timestamp": "2026-04-13T11:34:10+0200",
       "date": "2026-04-13",
-      "hour": "11-11",
-      "path": "/snapshots/demorgen.be/2026-04-13/11-11/"
+      "hour": "11-34",
+      "path": "/snapshots/demorgen.be/2026-04-13/11-34/"
     }
   ]
 }
