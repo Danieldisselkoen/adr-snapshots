@@ -1,0 +1,16 @@
+{
+  "id": "destandaard.be/2026-04-14/18-23",
+  "domain": "destandaard.be",
+  "url": "https://www.destandaard.be",
+  "timestamp": "2026-04-14T18:23:45+0200",
+  "date": "2026-04-14",
+  "hour": "18-23",
+  "viewport": {
+    "width": 390,
+    "height": 1280
+  },
+  "fileSize": {
+    "screenshot": 259788,
+    "html": 975180
+  }
+}
