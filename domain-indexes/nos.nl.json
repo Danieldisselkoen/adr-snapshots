@@ -2,11 +2,11 @@
   "domain": "nos.nl",
   "snapshots": [
     {
-      "id": "nos.nl/2026-04-25/18-11",
-      "timestamp": "2026-04-25T18:11:56+0200",
+      "id": "nos.nl/2026-04-25/18-47",
+      "timestamp": "2026-04-25T18:47:35+0200",
       "date": "2026-04-25",
-      "hour": "18-11",
-      "path": "/snapshots/nos.nl/2026-04-25/18-11/"
+      "hour": "18-47",
+      "path": "/snapshots/nos.nl/2026-04-25/18-47/"
     }
   ]
 }
