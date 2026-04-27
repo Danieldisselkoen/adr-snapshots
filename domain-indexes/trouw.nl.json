@@ -2,11 +2,11 @@
   "domain": "trouw.nl",
   "snapshots": [
     {
-      "id": "trouw.nl/2026-04-27/22-22",
-      "timestamp": "2026-04-27T22:22:33+0200",
+      "id": "trouw.nl/2026-04-27/22-50",
+      "timestamp": "2026-04-27T22:50:23+0200",
       "date": "2026-04-27",
-      "hour": "22-22",
-      "path": "/snapshots/trouw.nl/2026-04-27/22-22/"
+      "hour": "22-50",
+      "path": "/snapshots/trouw.nl/2026-04-27/22-50/"
     }
   ]
 }
