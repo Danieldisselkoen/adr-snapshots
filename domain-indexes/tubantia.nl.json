@@ -2,11 +2,11 @@
   "domain": "tubantia.nl",
   "snapshots": [
     {
-      "id": "tubantia.nl/2026-05-12/11-25",
-      "timestamp": "2026-05-12T11:25:08+0200",
+      "id": "tubantia.nl/2026-05-12/12-00",
+      "timestamp": "2026-05-12T12:00:20+0200",
       "date": "2026-05-12",
-      "hour": "11-25",
-      "path": "/snapshots/tubantia.nl/2026-05-12/11-25/"
+      "hour": "12-00",
+      "path": "/snapshots/tubantia.nl/2026-05-12/12-00/"
     }
   ]
 }
