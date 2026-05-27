@@ -30,6 +30,21 @@
         "tubantia.nl",
         "bndestem.nl"
       ]
+    },
+    {
+      "time": "01-01",
+      "timestamp": "2026-05-28T01:01:21+0200",
+      "displayTime": "01:01",
+      "domains": [
+        "ad.nl",
+        "pzc.nl",
+        "ed.nl",
+        "bd.nl",
+        "destentor.nl",
+        "gelderlander.nl",
+        "tubantia.nl",
+        "bndestem.nl"
+      ]
     }
   ]
 }
