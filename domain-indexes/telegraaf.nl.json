@@ -2,11 +2,11 @@
   "domain": "telegraaf.nl",
   "snapshots": [
     {
-      "id": "telegraaf.nl/2026-06-14/15-32",
-      "timestamp": "2026-06-14T15:32:55+0200",
+      "id": "telegraaf.nl/2026-06-14/16-17",
+      "timestamp": "2026-06-14T16:17:14+0200",
       "date": "2026-06-14",
-      "hour": "15-32",
-      "path": "/snapshots/telegraaf.nl/2026-06-14/15-32/"
+      "hour": "16-17",
+      "path": "/snapshots/telegraaf.nl/2026-06-14/16-17/"
     }
   ]
 }
