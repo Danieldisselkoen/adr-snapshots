@@ -2,11 +2,11 @@
   "domain": "nieuwsblad.be",
   "snapshots": [
     {
-      "id": "nieuwsblad.be/2026-06-25/14-18",
-      "timestamp": "2026-06-25T14:18:24+0200",
+      "id": "nieuwsblad.be/2026-06-25/14-45",
+      "timestamp": "2026-06-25T14:45:03+0200",
       "date": "2026-06-25",
-      "hour": "14-18",
-      "path": "/snapshots/nieuwsblad.be/2026-06-25/14-18/"
+      "hour": "14-45",
+      "path": "/snapshots/nieuwsblad.be/2026-06-25/14-45/"
     }
   ]
 }
