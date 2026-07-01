@@ -1,0 +1,16 @@
+{
+  "id": "ad.nl/2026-07-01/23-04",
+  "domain": "ad.nl",
+  "url": "https://www.ad.nl",
+  "timestamp": "2026-07-01T23:04:12+0200",
+  "date": "2026-07-01",
+  "hour": "23-04",
+  "viewport": {
+    "width": 390,
+    "height": 1280
+  },
+  "fileSize": {
+    "screenshot": 263704,
+    "html": 528841
+  }
+}
