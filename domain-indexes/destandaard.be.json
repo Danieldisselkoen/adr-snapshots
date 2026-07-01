@@ -2,11 +2,11 @@
   "domain": "destandaard.be",
   "snapshots": [
     {
-      "id": "destandaard.be/2026-07-01/16-19",
-      "timestamp": "2026-07-01T16:19:54+0200",
+      "id": "destandaard.be/2026-07-01/16-58",
+      "timestamp": "2026-07-01T16:58:30+0200",
       "date": "2026-07-01",
-      "hour": "16-19",
-      "path": "/snapshots/destandaard.be/2026-07-01/16-19/"
+      "hour": "16-58",
+      "path": "/snapshots/destandaard.be/2026-07-01/16-58/"
     }
   ]
 }
