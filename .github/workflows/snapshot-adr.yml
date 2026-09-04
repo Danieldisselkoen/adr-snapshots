@@ -249,8 +249,14 @@ jobs:
       # Zonder deze stap groeit adr-snapshots door tot tientallen GB, wat de
       # checkout traag maakt en waarschijnlijk meespeelt in het throttelen van
       # de scheduled runs door GitHub.
+      # Opruimen is onderhoud, geen kernfunctie. Deze stap eindigt daarom altijd
+      # met exit 0: gaat er iets mis, dan pakt de volgende run het opnieuw op.
+      # Een mislukte opruiming mag nooit de snapshot zelf meeslepen.
       - name: Ruim verlopen snapshots op
+        continue-on-error: true
         run: |
+          set -uo pipefail
+
           PRUNE="../adr-brandguide/scripts/prune-snapshots.js"
 
           if [ ! -f "$PRUNE" ]; then
@@ -261,17 +267,40 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
 
-          node "$PRUNE" --config=../adr-brandguide/snapshot-adr.config.json
+          for POGING in 1 2 3; do
+            echo "Poging $POGING"
 
-          if git diff --cached --quiet; then
-            echo "Niets opgeruimd, alles valt binnen de bewaartermijn"
-          else
+            # Schone start op de laatste stand van de remote. Een pull --rebase
+            # loopt vast zodra de historie is gecompacteerd, want dan rebaset hij
+            # op een niet-verwante wortelcommit en blijven er unmerged files
+            # achter. Met fetch plus reset kan dat niet gebeuren.
+            git rebase --abort 2>/dev/null || true
+            git fetch --quiet origin main || true
+            git reset --hard --quiet FETCH_HEAD || true
+
+            if ! node "$PRUNE" --config=../adr-brandguide/snapshot-adr.config.json; then
+              echo "Retentiescript gaf een fout, deze ronde overslaan"
+              exit 0
+            fi
+
+            if git diff --cached --quiet; then
+              echo "Niets opgeruimd, alles valt binnen de bewaartermijn"
+              exit 0
+            fi
+
             git commit -q -m "Verwijder snapshots ouder dan de bewaartermijn"
-            for i in 1 2 3; do
-              git pull --rebase && git push && break || sleep 5
-            done
-            echo "Opruiming gepusht"
-          fi
+
+            if git push --quiet origin HEAD:main; then
+              echo "Opruiming gepusht"
+              exit 0
+            fi
+
+            echo "  Push mislukt, er is waarschijnlijk net een snapshot binnen"
+            sleep 5
+          done
+
+          echo "Opruiming niet gelukt, de volgende run pakt het opnieuw op"
+          exit 0
 
       - name: Upload artifacts (for debugging)
         if: failure()
