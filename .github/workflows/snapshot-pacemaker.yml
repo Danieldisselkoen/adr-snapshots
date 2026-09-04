@@ -14,12 +14,22 @@ name: Snapshot Pacemaker
 # Deze workflow hoort thuis in adr-snapshots (publiek, gratis minuten), niet in
 # adr-brandguide (prive, betaalde minuten).
 
+# STAAT UIT. De cron hieronder is bewust uitgeschakeld.
+#
+# Om binnen GitHub op vaste tijden te kunnen aansturen moet deze workflow een
+# runner vasthouden en daar grotendeels in zitten wachten. Over het venster van
+# 04-22 UTC is dat zo'n 19 uur runnertijd per dag, vrijwel volledig sleep. Dat
+# is gratis op een publiek repo, maar het is precies het soort verbruik dat je
+# niet wilt op een repo waarvan de scheduled runs net werden geknepen.
+#
+# Sinds de historie is gecompacteerd vuurt de gewone cron van snapshot-adr.yml
+# weer, dus we kijken eerst of die het alleen afkan. Blijken er toch gaten te
+# vallen, dan start je hem handmatig via Actions, of zet je de cron terug door
+# de regel hieronder uit commentaar te halen.
+
 on:
-  schedule:
-    # Elk uur binnen het venster een kans om te starten. Er is er maar een
-    # tegelijk nodig, de rest wordt door de concurrency-group weggestreept.
-    # Buiten het venster hoeft er niets te draaien.
-    - cron: '0 4-22 * * *'
+  # schedule:
+  #   - cron: '0 4-22 * * *'
 
   workflow_dispatch:
     inputs:
