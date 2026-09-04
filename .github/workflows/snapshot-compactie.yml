@@ -1,0 +1,178 @@
+name: Snapshot Compactie
+
+# Houdt de git-historie van dit repo kort.
+#
+# WAAROM DIT NODIG IS
+# prune-snapshots.js haalt verlopen snapshots uit de tip, maar de commits
+# eronder blijven verwijzen naar elke webp die ooit is gecommit. De bestanden
+# verdwijnen dus uit de werkmap en blijven toch meetellen voor de omvang. Tussen
+# 18 december 2025 en 4 september 2026 groeide dit repo daardoor naar 36 GB, in
+# een tempo van ongeveer 140 MB per dag. Bij die omvang begon GitHub de
+# scheduled runs te droppen.
+#
+# WAT DEZE WORKFLOW DOET
+# Een keer per maand wordt de historie platgeslagen tot een enkele commit zonder
+# ouders, met exact dezelfde tree als de huidige tip. De inhoud blijft byte voor
+# byte gelijk, alleen de voorgeschiedenis verdwijnt. Daarmee bevat de historie
+# nooit meer dan een maand aan commits en blijft het repo rond de 4 GB.
+#
+# Dit gebeurt via de Git Data API en niet via git push. Bij een push zou de
+# runner alle blobs eerst moeten ophalen om ze daarna weer te uploaden, wat
+# neerkomt op gigabytes verkeer voor een wijziging van nul bytes.
+#
+# LET OP
+# GitHub geeft de ruimte niet direct terug. De oude objecten zijn na afloop
+# onbereikbaar, maar verdwijnen pas bij hun eigen garbage collect. Blijft de
+# omvang weken hangen, vraag GitHub Support dan om een gc op dit repo.
+
+on:
+  schedule:
+    # Eerste van de maand om 02:00 UTC. Dat valt bewust buiten het
+    # snapshotvenster van 04-22 UTC, zodat er niets tussendoor komt.
+    - cron: '0 2 1 * *'
+
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Alleen tonen wat er zou gebeuren'
+        required: false
+        default: false
+        type: boolean
+
+      max_leeftijd_dagen:
+        description: 'Afbreken als de oudste snapshot in de tip ouder is dan dit'
+        required: false
+        default: '45'
+        type: string
+
+concurrency:
+  group: snapshot-compactie
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  compacteren:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Historie platslaan tot een commit
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          MAX_LEEFTIJD: ${{ inputs.max_leeftijd_dagen || '45' }}
+        run: |
+          set -uo pipefail
+
+          REPO="${GITHUB_REPOSITORY}"
+          POGINGEN=5
+
+          OMVANG=$(gh api "repos/$REPO" --jq '.size')
+          echo "Omvang volgens GitHub: $(( OMVANG / 1048576 )) GB"
+          echo ""
+
+          # Veiligheidscontrole. Als de retentiestap in snapshot-adr.yml stuk is
+          # staan er nog oude snapshots in de tip. Die zouden we hier voorgoed
+          # vastleggen in de nieuwe wortelcommit, en dan schiet compacteren zijn
+          # doel volledig voorbij.
+          OUDSTE=$(gh api "repos/$REPO/contents/ad.nl" --jq '[.[].name] | sort | first' 2>/dev/null)
+
+          if [ -z "$OUDSTE" ]; then
+            echo "Kon de oudste snapshotdatum niet bepalen, afgebroken."
+            exit 1
+          fi
+
+          LEEFTIJD=$(( ( $(date -u +%s) - $(date -u -d "$OUDSTE" +%s) ) / 86400 ))
+          echo "Oudste snapshot in de tip: $OUDSTE ($LEEFTIJD dagen oud)"
+
+          if [ "$LEEFTIJD" -gt "$MAX_LEEFTIJD" ]; then
+            echo ""
+            echo "Afgebroken: de tip bevat snapshots van $LEEFTIJD dagen oud, meer"
+            echo "dan de toegestane $MAX_LEEFTIJD. Waarschijnlijk draait de"
+            echo "retentiestap niet. Controleer eerst of prune-snapshots.js in"
+            echo "adr-brandguide staat en of de stap slaagt, anders leg je die"
+            echo "hele achterstand vast in de nieuwe wortelcommit."
+            exit 1
+          fi
+          echo ""
+
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "  tip  : $(gh api "repos/$REPO/commits/main" --jq '.sha')"
+            echo "  tree : $(gh api "repos/$REPO/commits/main" --jq '.commit.tree.sha')"
+            echo ""
+            echo "DRY RUN: er wordt niets gewijzigd."
+            exit 0
+          fi
+
+          BERICHT=$(printf '%s\n\n%s\n%s' \
+            "Compacteer historie tot een commit" \
+            "Automatische maandelijkse compactie. De commits hiervoor verwezen samen" \
+            "naar elke webp die ooit is gecommit. Deze commit heeft dezelfde inhoud, maar zonder voorgeschiedenis.")
+
+          for POGING in $(seq 1 $POGINGEN); do
+            echo "Poging $POGING van $POGINGEN"
+
+            OUD=$(gh api "repos/$REPO/commits/main" --jq '.sha')
+            TREE=$(gh api "repos/$REPO/commits/main" --jq '.commit.tree.sha')
+            echo "  tip  : $OUD"
+            echo "  tree : $TREE"
+
+            # Met jq opbouwen, dan hoeven we niet met escaping in een heredoc te
+            # goochelen en is de JSON altijd geldig.
+            jq -n --arg tree "$TREE" --arg msg "$BERICHT" \
+              '{tree: $tree, parents: [], message: $msg}' > payload.json
+
+            # Bewust geen --jq op deze aanroep: bij een fout is de body leeg en
+            # verdwijnt de eigenlijke melding achter een jq-parsefout.
+            if ! gh api "repos/$REPO/git/commits" -X POST --input payload.json > antwoord.json 2>&1; then
+              echo ""
+              echo "  Aanmaken van de commit mislukte. Antwoord van GitHub:"
+              sed 's/^/    /' antwoord.json
+              exit 1
+            fi
+
+            NIEUW=$(jq -r '.sha // empty' antwoord.json)
+            if [ -z "$NIEUW" ]; then
+              echo "  Geen sha teruggekregen, afgebroken."
+              exit 1
+            fi
+            echo "  nieuw: $NIEUW"
+
+            # Eigen lease: is main verschoven, dan is er net een snapshot
+            # gepusht. Die willen we niet overschrijven.
+            HUIDIG=$(gh api "repos/$REPO/commits/main" --jq '.sha')
+            if [ "$HUIDIG" != "$OUD" ]; then
+              echo "  main verschoof naar ${HUIDIG:0:7}, opnieuw met de verse tree"
+              echo ""
+              sleep 10
+              continue
+            fi
+
+            if gh api "repos/$REPO/git/refs/heads/main" -X PATCH \
+                 -f sha="$NIEUW" -F force=true > /dev/null 2>&1; then
+              echo ""
+              echo "Klaar. main staat nu op ${NIEUW:0:7} zonder voorgeschiedenis."
+              echo ""
+              echo "De omvang zakt pas nadat GitHub zijn garbage collect heeft"
+              echo "gedraaid. Blijft die weken hangen, vraag Support om een gc."
+
+              {
+                echo "### Snapshot compactie"
+                echo ""
+                echo "- Omvang voor: $(( OMVANG / 1048576 )) GB"
+                echo "- Oudste snapshot in de tip: $OUDSTE ($LEEFTIJD dagen)"
+                echo "- Nieuwe wortelcommit: \`${NIEUW:0:7}\`"
+              } >> "$GITHUB_STEP_SUMMARY"
+
+              exit 0
+            fi
+
+            echo "  Verzetten van main mislukte, opnieuw proberen"
+            echo ""
+            sleep 10
+          done
+
+          echo "Na $POGINGEN pogingen niet gelukt."
+          exit 1
