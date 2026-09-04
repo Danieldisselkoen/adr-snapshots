@@ -47,6 +47,12 @@ on:
         default: '22'
         type: string
 
+      ontdubbel_minuten:
+        description: 'Sla een slot over als er zo kort geleden al een run was'
+        required: false
+        default: '20'
+        type: string
+
 # Een pacemaker tegelijk. cancel-in-progress staat uit, zodat een lopend venster
 # nooit halverwege wordt afgekapt.
 concurrency:
@@ -70,6 +76,7 @@ jobs:
           INTERVAL_MINUTEN: ${{ inputs.interval_minuten || '30' }}
           VENSTER_START: ${{ inputs.venster_start || '4' }}
           VENSTER_EIND: ${{ inputs.venster_eind || '22' }}
+          ONTDUBBEL_MINUTEN: ${{ inputs.ontdubbel_minuten || '20' }}
         run: |
           set -uo pipefail
 
@@ -106,6 +113,21 @@ jobs:
             if [ "$UUR" -lt "$VENSTER_START" ] || [ "$UUR" -gt "$VENSTER_EIND" ]; then
               echo "$(date -u +%H:%M) UTC valt buiten ${VENSTER_START}-${VENSTER_EIND} UTC, overslaan"
               return 0
+            fi
+
+            # Ontdubbeling. De cron van snapshot-adr.yml staat er nog als
+            # vangnet, dus als die net zelf heeft gevuurd hoeven wij dit slot
+            # niet nog eens te doen. Anders krijg je twee snapshots vlak na
+            # elkaar en dubbele groei van het repo.
+            LAATSTE=$(gh run list --repo "$REPO" --workflow=snapshot-adr.yml \
+              --limit 1 --json createdAt --jq '.[0].createdAt // empty' 2>/dev/null)
+
+            if [ -n "$LAATSTE" ]; then
+              LEEFTIJD=$(( $(date -u +%s) - $(date -u -d "$LAATSTE" +%s) ))
+              if [ "$LEEFTIJD" -lt $(( ONTDUBBEL_MINUTEN * 60 )) ]; then
+                echo "$(date -u +%H:%M) UTC: $(( LEEFTIJD / 60 )) min geleden al een run, overslaan"
+                return 0
+              fi
             fi
 
             echo "$(date -u +%H:%M) UTC: snapshot-run starten"
