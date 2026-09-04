@@ -1,0 +1,456 @@
+name: ADR Hourly Snapshots
+
+on:
+  schedule:
+    - cron: '0 4-22 * * *'
+    - cron: '30 4-22 * * *'
+
+  workflow_dispatch:
+    inputs:
+      domains:
+        description: 'Comma-separated domains to snapshot (leave empty for all)'
+        required: false
+        type: string
+
+      force_cleanup:
+        description: 'Clean slate - Remove ALL previous snapshots from repository'
+        required: false
+        type: boolean
+        default: false
+
+# De cron hierboven blijft staan als vangnet, maar de echte aansturing komt van
+# snapshot-pacemaker.yml. Daardoor kunnen een cron-run en een pacemaker-dispatch
+# samenvallen. Deze group zorgt dat ze niet tegelijk pushen: de tweede wacht tot
+# de eerste klaar is, en overtollige wachtenden vervallen.
+concurrency:
+  group: adr-snapshot-run
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    outputs:
+      cloudflare_failed: ${{ steps.check-cloudflare.outputs.cloudflare_failed }}
+      snapshot_time: ${{ steps.check-cloudflare.outputs.snapshot_time }}
+      snapshot_date: ${{ steps.check-cloudflare.outputs.snapshot_date }}
+      snapshot_timestamp: ${{ steps.check-cloudflare.outputs.snapshot_timestamp }}
+
+    steps:
+      - name: Checkout snapshots repository (sparse - only JSON files)
+        uses: actions/checkout@v3
+        with:
+          sparse-checkout: |
+            *.json
+            .github
+          sparse-checkout-cone-mode: false
+
+      - name: Clone private code repository
+        run: |
+          git clone https://github-actions:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/Danieldisselkoen/adr-brandguide.git ../adr-brandguide
+          echo "Successfully cloned private repository"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          cd ../adr-brandguide
+          npm ci
+          npm install puppeteer
+
+      - name: Force cleanup of existing snapshots (if requested)
+        if: github.event.inputs.force_cleanup == 'true'
+        run: |
+          echo "Force cleanup enabled - preparing clean slate..."
+          find . -name "*.webp" -delete 2>/dev/null || true
+          find . -name "*.png" -delete 2>/dev/null || true
+          find . -name "metadata.json" -delete 2>/dev/null || true
+          rm -rf ad.nl bd.nl bndestem.nl destentor.nl ed.nl gelderlander.nl pzc.nl tubantia.nl 2>/dev/null || true
+          find . -maxdepth 1 -name "*.json" -delete 2>/dev/null || true
+          rm -rf domain-indexes 2>/dev/null || true
+          echo "Cleanup complete"
+
+      - name: Create snapshots directory
+        run: |
+          cd ../adr-brandguide
+          mkdir -p snapshots
+
+      - name: Take snapshots
+        run: |
+          cd ../adr-brandguide
+          export TZ=Europe/Amsterdam
+          SNAPSHOT_TIME=$(date +"%H-%M")
+          SNAPSHOT_DATE=$(date +"%Y-%m-%d")
+          SNAPSHOT_TIMESTAMP=$(date +"%Y-%m-%dT%H:%M:%S%z")
+
+          echo "Starting snapshots at $SNAPSHOT_DATE $SNAPSHOT_TIME"
+
+          echo "$SNAPSHOT_TIME" > snapshot_time.txt
+          echo "$SNAPSHOT_DATE" > snapshot_date.txt
+          echo "$SNAPSHOT_TIMESTAMP" > snapshot_timestamp.txt
+
+          if [ -n "${{ github.event.inputs.domains }}" ]; then
+            node scripts/snapshot-multi.js "${{ github.event.inputs.domains }}" --time="$SNAPSHOT_TIME" --date="$SNAPSHOT_DATE" --timestamp="$SNAPSHOT_TIMESTAMP"
+          else
+            node scripts/snapshot-multi.js --time="$SNAPSHOT_TIME" --date="$SNAPSHOT_DATE" --timestamp="$SNAPSHOT_TIMESTAMP"
+          fi
+        timeout-minutes: 10
+
+      - name: Check Cloudflare failures and set outputs
+        id: check-cloudflare
+        run: |
+          cd ../adr-brandguide
+          SNAPSHOT_TIME=$(cat snapshot_time.txt 2>/dev/null || echo "")
+          SNAPSHOT_DATE=$(cat snapshot_date.txt 2>/dev/null || echo "")
+          SNAPSHOT_TIMESTAMP=$(cat snapshot_timestamp.txt 2>/dev/null || echo "")
+
+          echo "snapshot_time=$SNAPSHOT_TIME" >> $GITHUB_OUTPUT
+          echo "snapshot_date=$SNAPSHOT_DATE" >> $GITHUB_OUTPUT
+          echo "snapshot_timestamp=$SNAPSHOT_TIMESTAMP" >> $GITHUB_OUTPUT
+
+          if [ -f "snapshots/cloudflare-failed.txt" ]; then
+            CF_FAILED=$(cat snapshots/cloudflare-failed.txt)
+            echo "cloudflare_failed=$CF_FAILED" >> $GITHUB_OUTPUT
+            if [ -n "$CF_FAILED" ]; then
+              echo "🚫 Cloudflare-geblokkeerde domeinen: $CF_FAILED"
+            else
+              echo "✅ Geen Cloudflare blokkades gedetecteerd"
+            fi
+          else
+            echo "cloudflare_failed=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate snapshots manifest and latest.json
+        run: |
+          cd ../adr-brandguide
+          export TZ=Europe/Amsterdam
+
+          if [ -f "snapshot_time.txt" ] && [ -f "snapshot_date.txt" ] && [ -f "snapshot_timestamp.txt" ]; then
+            SNAPSHOT_TIME=$(cat snapshot_time.txt)
+            SNAPSHOT_DATE=$(cat snapshot_date.txt)
+            SNAPSHOT_TIMESTAMP=$(cat snapshot_timestamp.txt)
+            echo "Using timestamps from snapshot step: $SNAPSHOT_DATE $SNAPSHOT_TIME"
+          else
+            SNAPSHOT_TIME=$(date +"%H-%M")
+            SNAPSHOT_DATE=$(date +"%Y-%m-%d")
+            SNAPSHOT_TIMESTAMP=$(date +"%Y-%m-%dT%H:%M:%S%z")
+            echo "Fallback: generating new timestamps: $SNAPSHOT_DATE $SNAPSHOT_TIME"
+          fi
+
+          DISPLAY_TIME="${SNAPSHOT_TIME//-/:}"
+
+          if [ -f "snapshots/snapshots-index.json" ]; then
+            EXISTING_DATE=$(grep -o '"date": *"[^"]*"' snapshots/snapshots-index.json | head -1 | sed 's/"date": *"\([^"]*\)"/\1/')
+
+            if [ "$EXISTING_DATE" = "$SNAPSHOT_DATE" ]; then
+              echo "Found existing snapshots for $SNAPSHOT_DATE, adding new timestamp..."
+              node -e "
+                const fs = require('fs');
+                const existing = JSON.parse(fs.readFileSync('snapshots/snapshots-index.json', 'utf8'));
+                const newSnapshot = {
+                  time: '$SNAPSHOT_TIME',
+                  timestamp: '$SNAPSHOT_TIMESTAMP',
+                  displayTime: '$DISPLAY_TIME',
+                  domains: ['ad.nl', 'pzc.nl', 'ed.nl', 'bd.nl', 'destentor.nl', 'gelderlander.nl', 'tubantia.nl', 'bndestem.nl']
+                };
+                const existingIndex = existing.snapshots.findIndex(s => s.time === '$SNAPSHOT_TIME');
+                if (existingIndex >= 0) {
+                  existing.snapshots[existingIndex] = newSnapshot;
+                } else {
+                  existing.snapshots.push(newSnapshot);
+                }
+                existing.snapshots.sort((a, b) => a.time.localeCompare(b.time));
+                fs.writeFileSync('snapshots/snapshots-index.json', JSON.stringify(existing, null, 2));
+              "
+            else
+              echo "Different date found, creating new index..."
+              echo "{\"date\":\"$SNAPSHOT_DATE\",\"snapshots\":[{\"time\":\"$SNAPSHOT_TIME\",\"timestamp\":\"$SNAPSHOT_TIMESTAMP\",\"displayTime\":\"$DISPLAY_TIME\",\"domains\":[\"ad.nl\",\"pzc.nl\",\"ed.nl\",\"bd.nl\",\"destentor.nl\",\"gelderlander.nl\",\"tubantia.nl\",\"bndestem.nl\"]}]}" > snapshots/snapshots-index.json
+            fi
+          else
+            echo "No existing snapshots-index.json found, creating new one..."
+            echo "{\"date\":\"$SNAPSHOT_DATE\",\"snapshots\":[{\"time\":\"$SNAPSHOT_TIME\",\"timestamp\":\"$SNAPSHOT_TIMESTAMP\",\"displayTime\":\"$DISPLAY_TIME\",\"domains\":[\"ad.nl\",\"pzc.nl\",\"ed.nl\",\"bd.nl\",\"destentor.nl\",\"gelderlander.nl\",\"tubantia.nl\",\"bndestem.nl\"]}]}" > snapshots/snapshots-index.json
+          fi
+
+          cp snapshots/snapshots-index.json "snapshots/snapshots-$SNAPSHOT_DATE.json"
+          echo "Created date-specific index: snapshots-$SNAPSHOT_DATE.json"
+
+          echo "{\"timestamp\":\"$SNAPSHOT_TIMESTAMP\",\"date\":\"$SNAPSHOT_DATE\",\"time\":\"$SNAPSHOT_TIME\",\"displayTime\":\"$DISPLAY_TIME\",\"domains\":[\"ad.nl\",\"pzc.nl\",\"ed.nl\",\"bd.nl\",\"destentor.nl\",\"gelderlander.nl\",\"tubantia.nl\",\"bndestem.nl\"],\"status\":\"completed\"}" > snapshots/latest.json
+
+          echo "Generated manifest files for $SNAPSHOT_DATE $SNAPSHOT_TIME"
+
+      - name: Copy snapshots and commit
+        run: |
+          echo "Copying snapshots to repository..."
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+          SNAPSHOT_DATE_FOR_MERGE=$(cat ../adr-brandguide/snapshot_date.txt 2>/dev/null || date +"%Y-%m-%d")
+
+          if [ -f "snapshots-index.json" ]; then
+            echo "Found existing snapshots-index.json in repository, merging..."
+            cp snapshots-index.json ../adr-brandguide/snapshots/existing-snapshots-index.json
+          fi
+
+          if [ -f "snapshots-$SNAPSHOT_DATE_FOR_MERGE.json" ]; then
+            echo "Found existing date-specific index for $SNAPSHOT_DATE_FOR_MERGE, merging..."
+            cp "snapshots-$SNAPSHOT_DATE_FOR_MERGE.json" "../adr-brandguide/snapshots/existing-date-specific.json"
+          fi
+
+          cd ../adr-brandguide
+          node -e "
+            const fs = require('fs');
+            const snapshotDate = '$SNAPSHOT_DATE_FOR_MERGE';
+            const newData = JSON.parse(fs.readFileSync('snapshots/snapshots-index.json', 'utf8'));
+            let existing = { date: snapshotDate, snapshots: [] };
+            if (fs.existsSync('snapshots/existing-date-specific.json')) {
+              existing = JSON.parse(fs.readFileSync('snapshots/existing-date-specific.json', 'utf8'));
+            } else if (fs.existsSync('snapshots/existing-snapshots-index.json')) {
+              const existingGeneral = JSON.parse(fs.readFileSync('snapshots/existing-snapshots-index.json', 'utf8'));
+              if (existingGeneral.date === snapshotDate) {
+                existing = existingGeneral;
+              }
+            }
+            if (existing.date === newData.date) {
+              for (const existingSnapshot of existing.snapshots) {
+                const existsInNew = newData.snapshots.find(s => s.time === existingSnapshot.time);
+                if (!existsInNew) {
+                  newData.snapshots.push(existingSnapshot);
+                }
+              }
+              newData.snapshots.sort((a, b) => a.time.localeCompare(b.time));
+            }
+            fs.writeFileSync('snapshots/snapshots-index.json', JSON.stringify(newData, null, 2));
+            fs.writeFileSync('snapshots/snapshots-' + newData.date + '.json', JSON.stringify(newData, null, 2));
+          "
+          cd ../${{ github.event.repository.name }}
+
+          if [ -d "../adr-brandguide/snapshots" ] && [ "$(ls -A ../adr-brandguide/snapshots 2>/dev/null)" ]; then
+            cp -r ../adr-brandguide/snapshots/* . 2>/dev/null || echo "Failed to copy snapshots"
+            rm -f existing-snapshots-index.json existing-date-specific.json 2>/dev/null || true
+            git add --sparse .
+            SNAPSHOT_TIME_FOR_COMMIT=$(cat ../adr-brandguide/snapshot_time.txt 2>/dev/null || echo "unknown")
+            SNAPSHOT_DATE_FOR_COMMIT=$(cat ../adr-brandguide/snapshot_date.txt 2>/dev/null || echo "unknown")
+            DISPLAY_TIME="${SNAPSHOT_TIME_FOR_COMMIT//-/:}"
+            COMMIT_MSG="Add snapshots from $SNAPSHOT_DATE_FOR_COMMIT $DISPLAY_TIME"
+            if git commit -m "$COMMIT_MSG"; then
+              # Pull-rebase-push met retry-loop om race conditions te voorkomen
+              for i in 1 2 3; do git pull --rebase && git push && break || sleep 2; done
+              echo "Snapshots pushed successfully"
+            else
+              echo "No changes to commit"
+            fi
+          else
+            echo "No snapshots directory found"
+          fi
+
+      # Houdt het repo binnen de bewaartermijn uit snapshot-adr.config.json.
+      # Zonder deze stap groeit adr-snapshots door tot tientallen GB, wat de
+      # checkout traag maakt en waarschijnlijk meespeelt in het throttelen van
+      # de scheduled runs door GitHub.
+      - name: Ruim verlopen snapshots op
+        run: |
+          PRUNE="../adr-brandguide/scripts/prune-snapshots.js"
+
+          if [ ! -f "$PRUNE" ]; then
+            echo "Retentiescript nog niet aanwezig in adr-brandguide, overslaan"
+            exit 0
+          fi
+
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+          node "$PRUNE" --config=../adr-brandguide/snapshot-adr.config.json
+
+          if git diff --cached --quiet; then
+            echo "Niets opgeruimd, alles valt binnen de bewaartermijn"
+          else
+            git commit -q -m "Verwijder snapshots ouder dan de bewaartermijn"
+            for i in 1 2 3; do
+              git pull --rebase && git push && break || sleep 5
+            done
+            echo "Opruiming gepusht"
+          fi
+
+      - name: Upload artifacts (for debugging)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshot-logs
+          path: |
+            global-index.json
+            domain-indexes/*.json
+          retention-days: 1
+
+      - name: Notify on failure
+        if: failure() && github.event_name == 'schedule'
+        run: echo "Snapshot workflow failed at $(date)"
+
+  # Retry Cloudflare-geblokkeerde domeinen op nieuwe runner (nieuw IP)
+  retry-cloudflare:
+    needs: snapshot
+    runs-on: ubuntu-latest
+    if: needs.snapshot.outputs.cloudflare_failed != ''
+
+    steps:
+      - name: Checkout snapshots repository (sparse)
+        uses: actions/checkout@v3
+        with:
+          sparse-checkout: |
+            *.json
+            .github
+          sparse-checkout-cone-mode: false
+
+      - name: Clone private code repository
+        run: |
+          git clone https://github-actions:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/Danieldisselkoen/adr-brandguide.git ../adr-brandguide
+          echo "Successfully cloned private repository"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          cd ../adr-brandguide
+          npm ci
+          npm install puppeteer
+
+      - name: Create snapshots directory
+        run: |
+          cd ../adr-brandguide
+          mkdir -p snapshots
+
+      - name: Retry Cloudflare-geblokkeerde domeinen
+        run: |
+          cd ../adr-brandguide
+          CF_DOMAINS="${{ needs.snapshot.outputs.cloudflare_failed }}"
+          SNAPSHOT_TIME="${{ needs.snapshot.outputs.snapshot_time }}"
+          SNAPSHOT_DATE="${{ needs.snapshot.outputs.snapshot_date }}"
+          SNAPSHOT_TIMESTAMP="${{ needs.snapshot.outputs.snapshot_timestamp }}"
+
+          echo "🔄 Retry van Cloudflare-geblokkeerde domeinen: $CF_DOMAINS"
+          echo "📅 Gebruik originele timestamp: $SNAPSHOT_DATE $SNAPSHOT_TIME"
+
+          node scripts/snapshot-multi.js "$CF_DOMAINS" \
+            --time="$SNAPSHOT_TIME" \
+            --date="$SNAPSHOT_DATE" \
+            --timestamp="$SNAPSHOT_TIMESTAMP"
+        timeout-minutes: 10
+
+      - name: Upload retry snapshots en update manifest
+        run: |
+          echo "📦 Pushing retry snapshots..."
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+          CF_DOMAINS="${{ needs.snapshot.outputs.cloudflare_failed }}"
+          SNAPSHOT_TIME="${{ needs.snapshot.outputs.snapshot_time }}"
+          SNAPSHOT_DATE="${{ needs.snapshot.outputs.snapshot_date }}"
+
+          # Check of retry nog steeds gefaald is
+          STILL_FAILED=""
+          if [ -f "../adr-brandguide/snapshots/cloudflare-failed.txt" ]; then
+            STILL_FAILED=$(cat ../adr-brandguide/snapshots/cloudflare-failed.txt)
+          fi
+
+          # Update manifest met retry-resultaten
+          cd ../adr-brandguide
+          node -e "
+            const fs = require('fs');
+            const cfDomains = '$CF_DOMAINS'.split(',').filter(d => d.trim());
+            const stillFailed = '$STILL_FAILED'.split(',').filter(d => d.trim());
+            const nowSucceeded = cfDomains.filter(d => !stillFailed.includes(d));
+
+            if (nowSucceeded.length > 0) {
+              console.log('✅ Retry succesvol voor:', nowSucceeded.join(', '));
+            }
+            if (stillFailed.length > 0) {
+              console.log('❌ Nog steeds geblokkeerd:', stillFailed.join(', '));
+            }
+          "
+          cd ../${{ github.event.repository.name }}
+
+          # Eerst pullen zodat we de laatste versie van JSON bestanden hebben
+          # (snapshot job kan net gepusht hebben)
+          git pull --rebase || true
+
+          # Kopieer retry snapshot bestanden
+          for domain in $(echo "$CF_DOMAINS" | tr ',' ' '); do
+            if [ -d "../adr-brandguide/snapshots/$domain" ]; then
+              cp -r "../adr-brandguide/snapshots/$domain" . 2>/dev/null || echo "Failed to copy $domain"
+              echo "📦 Gekopieerd: $domain"
+            fi
+          done
+
+          # Update het manifest: voeg geretriede domeinen toe aan het bestaande timeslot
+          # Nu werken we op de GEPULLDE versie van de JSON bestanden (geen conflict meer)
+          node -e "
+            const fs = require('fs');
+            const cfDomains = '$CF_DOMAINS'.split(',').filter(d => d.trim());
+            const stillFailed = '$STILL_FAILED'.split(',').filter(d => d.trim());
+            const nowSucceeded = cfDomains.filter(d => !stillFailed.includes(d));
+
+            if (fs.existsSync('snapshots-index.json') && nowSucceeded.length > 0) {
+              const index = JSON.parse(fs.readFileSync('snapshots-index.json', 'utf8'));
+              const slot = index.snapshots.find(s => s.time === '$SNAPSHOT_TIME');
+              if (slot) {
+                for (const domain of nowSucceeded) {
+                  if (!slot.domains.includes(domain)) {
+                    slot.domains.push(domain);
+                    console.log('✅ Domein toegevoegd aan manifest:', domain);
+                  }
+                }
+                fs.writeFileSync('snapshots-index.json', JSON.stringify(index, null, 2));
+                fs.writeFileSync('snapshots-$SNAPSHOT_DATE.json', JSON.stringify(index, null, 2));
+                console.log('📋 Manifest bijgewerkt met retry-resultaten');
+              }
+            }
+
+            if (fs.existsSync('latest.json') && nowSucceeded.length > 0) {
+              const latest = JSON.parse(fs.readFileSync('latest.json', 'utf8'));
+              for (const domain of nowSucceeded) {
+                if (!latest.domains.includes(domain)) {
+                  latest.domains.push(domain);
+                }
+              }
+              if (stillFailed.length > 0) {
+                latest.cloudflareBlocked = stillFailed;
+              } else {
+                delete latest.cloudflareBlocked;
+              }
+              fs.writeFileSync('latest.json', JSON.stringify(latest, null, 2));
+            }
+          "
+
+          # Commit en push
+          git add --sparse .
+          DISPLAY_TIME="${SNAPSHOT_TIME//-/:}"
+          COMMIT_MSG="Retry Cloudflare-geblokkeerde domeinen: $CF_DOMAINS ($SNAPSHOT_DATE $DISPLAY_TIME)"
+
+          if git commit -m "$COMMIT_MSG"; then
+            # Push met rebase-retry als fallback
+            PUSH_SUCCESS=false
+            for i in 1 2 3; do
+              if git push; then
+                PUSH_SUCCESS=true
+                break
+              fi
+              echo "⚠️ Push poging $i mislukt, rebase en opnieuw..."
+              git pull --rebase -X theirs || {
+                echo "⚠️ Rebase conflict, abort en force-apply onze wijzigingen..."
+                git rebase --abort 2>/dev/null || true
+                git pull -X theirs
+              }
+              sleep 2
+            done
+            if $PUSH_SUCCESS; then
+              echo "✅ Retry snapshots gepusht"
+            else
+              echo "❌ Push mislukt na 3 pogingen"
+            fi
+          else
+            echo "Geen wijzigingen om te committen"
+          fi

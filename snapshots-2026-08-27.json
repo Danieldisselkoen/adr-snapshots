@@ -1,0 +1,65 @@
+{
+  "date": "2026-08-27",
+  "snapshots": [
+    {
+      "time": "02-59",
+      "timestamp": "2026-08-27T02:59:28+0200",
+      "displayTime": "02:59",
+      "domains": [
+        "ad.nl",
+        "pzc.nl",
+        "ed.nl",
+        "bd.nl",
+        "destentor.nl",
+        "gelderlander.nl",
+        "tubantia.nl",
+        "bndestem.nl"
+      ]
+    },
+    {
+      "time": "04-27",
+      "timestamp": "2026-08-27T04:27:33+0200",
+      "displayTime": "04:27",
+      "domains": [
+        "ad.nl",
+        "pzc.nl",
+        "ed.nl",
+        "bd.nl",
+        "destentor.nl",
+        "gelderlander.nl",
+        "tubantia.nl",
+        "bndestem.nl"
+      ]
+    },
+    {
+      "time": "16-53",
+      "timestamp": "2026-08-27T16:53:48+0200",
+      "displayTime": "16:53",
+      "domains": [
+        "ad.nl",
+        "pzc.nl",
+        "ed.nl",
+        "bd.nl",
+        "destentor.nl",
+        "gelderlander.nl",
+        "tubantia.nl",
+        "bndestem.nl"
+      ]
+    },
+    {
+      "time": "17-24",
+      "timestamp": "2026-08-27T17:24:52+0200",
+      "displayTime": "17:24",
+      "domains": [
+        "ad.nl",
+        "pzc.nl",
+        "ed.nl",
+        "bd.nl",
+        "destentor.nl",
+        "gelderlander.nl",
+        "tubantia.nl",
+        "bndestem.nl"
+      ]
+    }
+  ]
+}

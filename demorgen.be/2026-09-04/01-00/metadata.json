@@ -1,0 +1,16 @@
+{
+  "id": "demorgen.be/2026-09-04/01-00",
+  "domain": "demorgen.be",
+  "url": "https://www.demorgen.be",
+  "timestamp": "2026-09-04T01:00:47+0200",
+  "date": "2026-09-04",
+  "hour": "01-00",
+  "viewport": {
+    "width": 390,
+    "height": 1280
+  },
+  "fileSize": {
+    "screenshot": 275922,
+    "html": 374543
+  }
+}

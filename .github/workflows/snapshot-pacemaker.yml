@@ -1,0 +1,137 @@
+name: Snapshot Pacemaker
+
+# GitHub vuurt de cron van snapshot-adr.yml sinds 26 augustus nog maar een paar
+# keer per dag af in plaats van 38 keer. Scheduled events zijn best-effort en
+# hoogfrequente crons worden als eerste gedropt. Daar is van onze kant niets
+# aan te sturen.
+#
+# Deze pacemaker draait daarom zelf een lang venster uit en start de
+# snapshot-workflow op vaste tijden via de API. Elke run dekt vijf uur af.
+# Doordat er maar een pacemaker tegelijk mag lopen houdt GitHub er maximaal
+# een in de wachtrij, die start zodra het vorige venster afloopt. Zo ontstaat
+# een aaneengesloten keten, ook als de meeste cron-triggers worden overgeslagen.
+#
+# Deze workflow hoort thuis in adr-snapshots (publiek, gratis minuten), niet in
+# adr-brandguide (prive, betaalde minuten).
+
+on:
+  schedule:
+    # Elk uur binnen het venster een kans om te starten. Er is er maar een
+    # tegelijk nodig, de rest wordt door de concurrency-group weggestreept.
+    # Buiten het venster hoeft er niets te draaien.
+    - cron: '0 4-22 * * *'
+
+  workflow_dispatch:
+    inputs:
+      duur_minuten:
+        description: 'Hoe lang dit venster snapshots blijft aansturen'
+        required: false
+        default: '300'
+        type: string
+
+      interval_minuten:
+        description: 'Tijd tussen twee snapshots'
+        required: false
+        default: '30'
+        type: string
+
+      venster_start:
+        description: 'Eerste uur in UTC waarop gesnapshot wordt'
+        required: false
+        default: '4'
+        type: string
+
+      venster_eind:
+        description: 'Laatste uur in UTC waarop gesnapshot wordt'
+        required: false
+        default: '22'
+        type: string
+
+# Een pacemaker tegelijk. cancel-in-progress staat uit, zodat een lopend venster
+# nooit halverwege wordt afgekapt.
+concurrency:
+  group: snapshot-pacemaker
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  pace:
+    runs-on: ubuntu-latest
+    # Ruim boven de vijf uur van het venster, zodat de job zelf nooit de
+    # beperkende factor is.
+    timeout-minutes: 330
+
+    steps:
+      - name: Stuur snapshots aan op vaste intervallen
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          DUUR_MINUTEN: ${{ inputs.duur_minuten || '300' }}
+          INTERVAL_MINUTEN: ${{ inputs.interval_minuten || '30' }}
+          VENSTER_START: ${{ inputs.venster_start || '4' }}
+          VENSTER_EIND: ${{ inputs.venster_eind || '22' }}
+        run: |
+          set -uo pipefail
+
+          REPO="Danieldisselkoen/adr-snapshots"
+          INTERVAL_SEC=$(( INTERVAL_MINUTEN * 60 ))
+
+          # Standaard hetzelfde venster als de oude cron: 04-22 UTC, dus
+          # ongeveer 06:00 tot 00:30 Nederlandse tijd.
+          NU=$(date -u +%s)
+          UUR=$(date -u +%-H)
+          SLUITING=$(date -u -d "today ${VENSTER_EIND}:59:59" +%s)
+
+          echo "Pacemaker gestart om $(date -u +%H:%M) UTC"
+          echo "Venster ${VENSTER_START}-${VENSTER_EIND} UTC"
+
+          if [ "$UUR" -lt "$VENSTER_START" ] || [ "$NU" -ge "$SLUITING" ]; then
+            echo "Buiten het venster gestart, niets te doen"
+            exit 0
+          fi
+
+          # Nooit doorlopen tot na sluitingstijd, anders houdt de job een runner
+          # bezet terwijl er toch niet gesnapshot wordt.
+          EINDE=$(( NU + DUUR_MINUTEN * 60 ))
+          if [ "$EINDE" -gt "$SLUITING" ]; then
+            EINDE=$SLUITING
+            echo "Venster ingekort tot sluitingstijd $(date -u -d "@$SLUITING" +%H:%M) UTC"
+          fi
+          echo "Venster van ${DUUR_MINUTEN} minuten, elke ${INTERVAL_MINUTEN} minuten een snapshot"
+          echo ""
+
+          dispatch() {
+            UUR=$(date -u +%-H)
+
+            if [ "$UUR" -lt "$VENSTER_START" ] || [ "$UUR" -gt "$VENSTER_EIND" ]; then
+              echo "$(date -u +%H:%M) UTC valt buiten ${VENSTER_START}-${VENSTER_EIND} UTC, overslaan"
+              return 0
+            fi
+
+            echo "$(date -u +%H:%M) UTC: snapshot-run starten"
+            if ! gh workflow run snapshot-adr.yml --repo "$REPO"; then
+              echo "  Dispatch mislukt, volgende ronde opnieuw proberen"
+            fi
+          }
+
+          # Direct een snapshot, zodat een gat meteen wordt gedicht en we niet
+          # eerst een half uur wachten.
+          dispatch
+
+          while true; do
+            NU=$(date -u +%s)
+
+            # Uitlijnen op hele en halve uren, zodat de tijdlijn in wayback weer
+            # nette tijdstippen toont in plaats van willekeurige.
+            VOLGENDE=$(( (NU / INTERVAL_SEC + 1) * INTERVAL_SEC ))
+
+            if [ "$VOLGENDE" -ge "$EINDE" ]; then
+              break
+            fi
+
+            sleep $(( VOLGENDE - NU ))
+            dispatch
+          done
+
+          echo ""
+          echo "Venster afgelopen om $(date -u +%H:%M) UTC"

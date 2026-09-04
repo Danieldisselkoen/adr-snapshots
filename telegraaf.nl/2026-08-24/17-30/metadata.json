@@ -1,0 +1,16 @@
+{
+  "id": "telegraaf.nl/2026-08-24/17-30",
+  "domain": "telegraaf.nl",
+  "url": "https://www.telegraaf.nl",
+  "timestamp": "2026-08-24T17:30:16+0200",
+  "date": "2026-08-24",
+  "hour": "17-30",
+  "viewport": {
+    "width": 390,
+    "height": 1280
+  },
+  "fileSize": {
+    "screenshot": 201324,
+    "html": 779396
+  }
+}

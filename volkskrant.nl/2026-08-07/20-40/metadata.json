@@ -1,0 +1,16 @@
+{
+  "id": "volkskrant.nl/2026-08-07/20-40",
+  "domain": "volkskrant.nl",
+  "url": "https://www.volkskrant.nl",
+  "timestamp": "2026-08-07T20:40:47+0200",
+  "date": "2026-08-07",
+  "hour": "20-40",
+  "viewport": {
+    "width": 390,
+    "height": 1280
+  },
+  "fileSize": {
+    "screenshot": 179188,
+    "html": 318648
+  }
+}
