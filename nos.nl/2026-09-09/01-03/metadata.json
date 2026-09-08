@@ -1,0 +1,16 @@
+{
+  "id": "nos.nl/2026-09-09/01-03",
+  "domain": "nos.nl",
+  "url": "https://www.nos.nl",
+  "timestamp": "2026-09-09T01:03:51+0200",
+  "date": "2026-09-09",
+  "hour": "01-03",
+  "viewport": {
+    "width": 390,
+    "height": 1280
+  },
+  "fileSize": {
+    "screenshot": 220284,
+    "html": 466105
+  }
+}
