@@ -73,7 +73,7 @@ jobs:
           echo "Omvang volgens GitHub: $(( OMVANG / 1048576 )) GB"
           echo ""
 
-          # Veiligheidscontrole. Als de retentiestap in snapshot-adr.yml stuk is
+          # Veiligheidscontrole. Als de retentiestap in snapshot-adr-v2.yml stuk is
           # staan er nog oude snapshots in de tip. Die zouden we hier voorgoed
           # vastleggen in de nieuwe wortelcommit, en dan schiet compacteren zijn
           # doel volledig voorbij.

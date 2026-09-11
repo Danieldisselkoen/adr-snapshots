@@ -1,10 +1,16 @@
 name: ADR Hourly Snapshots
 
-on:
-  schedule:
-    - cron: '0 4-22 * * *'
-    - cron: '30 4-22 * * *'
+# Dit bestand heette tot 11 september 2026 snapshot-adr.yml.
+#
+# Deze workflow heeft bewust GEEN schedule meer. Sinds het Actions-incident van
+# 26 augustus 2026 vuurde GitHub de cron nog maar 8 tot 13 keer per dag in
+# plaats van 38, en hernoemen, pushen en wijzigen hielpen niet. De aansturing
+# komt sinds 11 september 2026 van de Cloudflare Worker adr-snapshot-trigger,
+# die elk half uur van 04:00 tot 22:30 UTC een workflow_dispatch doet. Bron van
+# die worker: scripts/snapshot-trigger-worker/ in adr-brandguide. Uitleg en
+# logboek: docs/2026-09-snapshot-cron-herstel.md in adr-brandguide.
 
+on:
   workflow_dispatch:
     inputs:
       domains:
@@ -18,10 +24,9 @@ on:
         type: boolean
         default: false
 
-# De cron hierboven blijft staan als vangnet, maar de echte aansturing komt van
-# snapshot-pacemaker.yml. Daardoor kunnen een cron-run en een pacemaker-dispatch
-# samenvallen. Deze group zorgt dat ze niet tegelijk pushen: de tweede wacht tot
-# de eerste klaar is, en overtollige wachtenden vervallen.
+# Twee dispatches kort na elkaar (bijvoorbeeld een handmatige start naast de
+# worker) mogen niet tegelijk pushen. Deze group zorgt dat de tweede wacht tot
+# de eerste klaar is, en dat overtollige wachtenden vervallen.
 concurrency:
   group: adr-snapshot-run
   cancel-in-progress: false

@@ -1,6 +1,6 @@
 name: Snapshot Pacemaker
 
-# GitHub vuurt de cron van snapshot-adr.yml sinds 26 augustus nog maar een paar
+# GitHub vuurde de cron van snapshot-adr.yml (nu snapshot-adr-v2.yml) sinds 26 augustus nog maar een paar
 # keer per dag af in plaats van 38 keer. Scheduled events zijn best-effort en
 # hoogfrequente crons worden als eerste gedropt. Daar is van onze kant niets
 # aan te sturen.
@@ -22,7 +22,7 @@ name: Snapshot Pacemaker
 # is gratis op een publiek repo, maar het is precies het soort verbruik dat je
 # niet wilt op een repo waarvan de scheduled runs net werden geknepen.
 #
-# Sinds de historie is gecompacteerd vuurt de gewone cron van snapshot-adr.yml
+# Sinds de historie is gecompacteerd vuurt de gewone cron van snapshot-adr-v2.yml
 # weer, dus we kijken eerst of die het alleen afkan. Blijken er toch gaten te
 # vallen, dan start je hem handmatig via Actions, of zet je de cron terug door
 # de regel hieronder uit commentaar te halen.
@@ -125,11 +125,11 @@ jobs:
               return 0
             fi
 
-            # Ontdubbeling. De cron van snapshot-adr.yml staat er nog als
+            # Ontdubbeling. De cron van snapshot-adr-v2.yml staat er nog als
             # vangnet, dus als die net zelf heeft gevuurd hoeven wij dit slot
             # niet nog eens te doen. Anders krijg je twee snapshots vlak na
             # elkaar en dubbele groei van het repo.
-            LAATSTE=$(gh run list --repo "$REPO" --workflow=snapshot-adr.yml \
+            LAATSTE=$(gh run list --repo "$REPO" --workflow=snapshot-adr-v2.yml \
               --limit 1 --json createdAt --jq '.[0].createdAt // empty' 2>/dev/null)
 
             if [ -n "$LAATSTE" ]; then
@@ -141,7 +141,7 @@ jobs:
             fi
 
             echo "$(date -u +%H:%M) UTC: snapshot-run starten"
-            if ! gh workflow run snapshot-adr.yml --repo "$REPO"; then
+            if ! gh workflow run snapshot-adr-v2.yml --repo "$REPO"; then
               echo "  Dispatch mislukt, volgende ronde opnieuw proberen"
             fi
           }
