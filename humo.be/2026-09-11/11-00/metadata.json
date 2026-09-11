@@ -1,0 +1,16 @@
+{
+  "id": "humo.be/2026-09-11/11-00",
+  "domain": "humo.be",
+  "url": "https://www.humo.be",
+  "timestamp": "2026-09-11T11:00:16+0200",
+  "date": "2026-09-11",
+  "hour": "11-00",
+  "viewport": {
+    "width": 390,
+    "height": 1280
+  },
+  "fileSize": {
+    "screenshot": 233194,
+    "html": 265616
+  }
+}
