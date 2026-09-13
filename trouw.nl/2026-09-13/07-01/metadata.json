@@ -1,0 +1,16 @@
+{
+  "id": "trouw.nl/2026-09-13/07-01",
+  "domain": "trouw.nl",
+  "url": "https://www.trouw.nl",
+  "timestamp": "2026-09-13T07:01:03+0200",
+  "date": "2026-09-13",
+  "hour": "07-01",
+  "viewport": {
+    "width": 390,
+    "height": 1280
+  },
+  "fileSize": {
+    "screenshot": 287110,
+    "html": 398576
+  }
+}
