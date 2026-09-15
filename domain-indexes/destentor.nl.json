@@ -2,11 +2,11 @@
   "domain": "destentor.nl",
   "snapshots": [
     {
-      "id": "destentor.nl/2026-09-15/10-00",
-      "timestamp": "2026-09-15T10:00:58+0200",
+      "id": "destentor.nl/2026-09-15/10-31",
+      "timestamp": "2026-09-15T10:31:06+0200",
       "date": "2026-09-15",
-      "hour": "10-00",
-      "path": "/snapshots/destentor.nl/2026-09-15/10-00/"
+      "hour": "10-31",
+      "path": "/snapshots/destentor.nl/2026-09-15/10-31/"
     }
   ]
 }
