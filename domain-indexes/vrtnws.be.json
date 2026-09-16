@@ -2,11 +2,11 @@
   "domain": "vrtnws.be",
   "snapshots": [
     {
-      "id": "vrtnws.be/2026-09-16/09-31",
-      "timestamp": "2026-09-16T09:31:01+0200",
+      "id": "vrtnws.be/2026-09-16/10-00",
+      "timestamp": "2026-09-16T10:00:58+0200",
       "date": "2026-09-16",
-      "hour": "09-31",
-      "path": "/snapshots/vrtnws.be/2026-09-16/09-31/"
+      "hour": "10-00",
+      "path": "/snapshots/vrtnws.be/2026-09-16/10-00/"
     }
   ]
 }
