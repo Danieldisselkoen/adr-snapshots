@@ -2,11 +2,11 @@
   "domain": "humo.be",
   "snapshots": [
     {
-      "id": "humo.be/2026-09-16/23-01",
-      "timestamp": "2026-09-16T23:01:00+0200",
+      "id": "humo.be/2026-09-16/23-31",
+      "timestamp": "2026-09-16T23:31:02+0200",
       "date": "2026-09-16",
-      "hour": "23-01",
-      "path": "/snapshots/humo.be/2026-09-16/23-01/"
+      "hour": "23-31",
+      "path": "/snapshots/humo.be/2026-09-16/23-31/"
     }
   ]
 }
