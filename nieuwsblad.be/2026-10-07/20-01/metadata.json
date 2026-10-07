@@ -1,0 +1,16 @@
+{
+  "id": "nieuwsblad.be/2026-10-07/20-01",
+  "domain": "nieuwsblad.be",
+  "url": "https://www.nieuwsblad.be",
+  "timestamp": "2026-10-07T20:01:48+0200",
+  "date": "2026-10-07",
+  "hour": "20-01",
+  "viewport": {
+    "width": 390,
+    "height": 1280
+  },
+  "fileSize": {
+    "screenshot": 239760,
+    "html": 733200
+  }
+}
