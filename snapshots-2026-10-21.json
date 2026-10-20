@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-21",
+  "snapshots": [
+    {
+      "time": "00-01",
+      "timestamp": "2026-10-21T00:01:16+0200",
+      "displayTime": "00:01",
+      "domains": [
+        "ad.nl",
+        "pzc.nl",
+        "ed.nl",
+        "bd.nl",
+        "destentor.nl",
+        "gelderlander.nl",
+        "tubantia.nl",
+        "bndestem.nl"
+      ]
+    }
+  ]
+}
