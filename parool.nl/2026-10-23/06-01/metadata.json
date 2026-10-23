@@ -1,0 +1,16 @@
+{
+  "id": "parool.nl/2026-10-23/06-01",
+  "domain": "parool.nl",
+  "url": "https://www.parool.nl",
+  "timestamp": "2026-10-23T06:01:00+0200",
+  "date": "2026-10-23",
+  "hour": "06-01",
+  "viewport": {
+    "width": 390,
+    "height": 1280
+  },
+  "fileSize": {
+    "screenshot": 258938,
+    "html": 458390
+  }
+}
