@@ -2,11 +2,11 @@
   "domain": "gelderlander.nl",
   "snapshots": [
     {
-      "id": "gelderlander.nl/2026-10-29/08-01",
-      "timestamp": "2026-10-29T08:01:23+0100",
+      "id": "gelderlander.nl/2026-10-29/08-31",
+      "timestamp": "2026-10-29T08:31:24+0100",
       "date": "2026-10-29",
-      "hour": "08-01",
-      "path": "/snapshots/gelderlander.nl/2026-10-29/08-01/"
+      "hour": "08-31",
+      "path": "/snapshots/gelderlander.nl/2026-10-29/08-31/"
     }
   ]
 }
