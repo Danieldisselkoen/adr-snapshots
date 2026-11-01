@@ -1,0 +1,16 @@
+{
+  "id": "nu.nl/2026-11-01/10-00",
+  "domain": "nu.nl",
+  "url": "https://www.nu.nl",
+  "timestamp": "2026-11-01T10:00:40+0100",
+  "date": "2026-11-01",
+  "hour": "10-00",
+  "viewport": {
+    "width": 390,
+    "height": 1280
+  },
+  "fileSize": {
+    "screenshot": 195906,
+    "html": 389758
+  }
+}
