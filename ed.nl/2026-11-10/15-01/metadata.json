@@ -1,0 +1,16 @@
+{
+  "id": "ed.nl/2026-11-10/15-01",
+  "domain": "ed.nl",
+  "url": "https://www.ed.nl",
+  "timestamp": "2026-11-10T15:01:05+0100",
+  "date": "2026-11-10",
+  "hour": "15-01",
+  "viewport": {
+    "width": 390,
+    "height": 1280
+  },
+  "fileSize": {
+    "screenshot": 253760,
+    "html": 745712
+  }
+}
